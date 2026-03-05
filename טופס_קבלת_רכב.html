@@ -324,47 +324,138 @@ function collectData() {
 // ── Print ──
 function printForm() {
   const d = collectData();
-  const row = (l,v,x='') => `<tr><td style="padding:4px 8px;border:1px solid #ddd;font-size:12px">${l}</td><td style="padding:4px 8px;border:1px solid #ddd;font-size:12px;font-weight:600;color:${(v==='yes'||v==='ok')?'#27ae60':(v==='no'||v==='notok')?'#e74c3c':'#333'}">${yn(v)}${x?' | '+x:''}</td></tr>`;
-  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:60px">`:'___________';
-  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:60px">`:'___________';
+
+  const items = [
+    ['גלגל רזרבי',d.spare,''],
+    ['פנסי צד וצמות',d.sideLamps,d.sideLampQty],
+    ['מתקן לגלגל',d.wheelHolder,''],
+    ['וו גרירה',d.hook,d.hookState],
+    ['פגוש אחורי',d.rearBumper,''],
+    ['ברזי אויר לנ"ל',d.airTaps,''],
+    ['סדי עצירה',d.brakes,d.brakesQty],
+    ['תושבות רתום',d.hitchBracket,d.hitchBracketNote],
+    ['מטף',d.extinguisher,d.extQty],
+    ['מפתחות',d.keys,d.keysQty],
+    ['עזרה ראשונה',d.firstAid,''],
+    ['שלט',d.sign,d.signQty],
+    ["מגבה (ג'ק)",d.jack,''],
+    ['כבל ABS',d.abs,''],
+    ['מפתח גלגלים',d.wheelKey,''],
+    ['משולש',d.triangle,''],
+    ['ידיות',d.handles,''],
+    ['אפוד זוהר',d.vest,''],
+    ['מכסה מצבר',d.battCover,''],
+    ['שלט למנוף',d.craneRemote,''],
+    ['מכסה דלק',d.fuelCap,''],
+    ['פנסים אחוריים',d.rearLights,''],
+    ['מכסה אוריאה',d.ureaCap,''],
+    ['קוטבי מצברים',d.battTerminals,''],
+  ];
+
+  const half = Math.ceil(items.length / 2);
+  const col1 = items.slice(0, half);
+  const col2 = items.slice(half);
+
+  const cell = (l,v,x) => {
+    const color = (v==='yes'||v==='ok')?'#27ae60':(v==='no'||v==='notok')?'#e74c3c':'#555';
+    const label = v==='yes'?'יש':v==='no'?'אין':v==='ok'?'תקין':v==='notok'?'לא תקין':v||'—';
+    const extra = x ? ` <span style="color:#999;font-size:10px">(${x})</span>` : '';
+    return `<td style="padding:6px 9px;border:1px solid #e0e0e0;font-size:13px;width:32%">${l}${extra}</td>
+            <td style="padding:6px 9px;border:1px solid #e0e0e0;font-size:13px;font-weight:700;color:${color};width:18%;text-align:center">${label}</td>`;
+  };
+
+  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:55px">`:'<span style="font-size:11px;color:#bbb">אין חתימה</span>';
+  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:55px">`:'<span style="font-size:11px;color:#bbb">אין חתימה</span>';
+
+  // Format date LTR – reverse YYYY-MM-DD to DD-MM-YYYY
+  let dateDisplay = '—';
+  if (d.date) {
+    const parts = d.date.split('-');
+    if (parts.length === 3) dateDisplay = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    else dateDisplay = d.date;
+  }
+
   const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8">
-<style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:auto;direction:rtl}
-h1{color:#1a3a5c;font-size:18px}h2{font-size:13px;color:#1a3a5c;margin:12px 0 4px;border-bottom:2px solid #e8a020;padding-bottom:2px}
-table{width:100%;border-collapse:collapse}td{vertical-align:top}
-.hdr{display:flex;justify-content:space-between;border-bottom:3px solid #1a3a5c;padding-bottom:8px;margin-bottom:14px}
-.badge{background:#e8a020;color:#1a3a5c;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}</style>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;padding:16px 20px;direction:rtl}
+  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a3a5c;padding-bottom:10px;margin-bottom:14px}
+  .badge{background:#e8a020;color:#1a3a5c;padding:5px 14px;border-radius:4px;font-size:13px;font-weight:700}
+  h2{font-size:13px;font-weight:700;color:#1a3a5c;background:#eef3f9;border-right:3px solid #e8a020;padding:5px 9px;margin:12px 0 6px}
+  table{width:100%;border-collapse:collapse}
+  .td{padding:6px 9px;border:1px solid #e0e0e0;font-size:13px}
+  @page{margin:9mm;size:A4}
+</style>
 </head><body>
-<div class="hdr"><div><h1>סילגי 2000 בע"מ</h1><div style="font-size:11px;color:#888">יצור מרכבים למשאיות</div></div><div class="badge">טופס קבלת רכב</div></div>
-<h2>פרטי לקוח</h2>
-<table><tr><td><b>תאריך:</b> ${d.date||'—'}</td><td><b>לקוח:</b> ${d.customerName||'—'}</td><td><b>טלפון:</b> ${d.phone||'—'}</td></tr>
-<tr><td><b>שלדה:</b> ${d.chassisNum||'—'}</td><td><b>רישוי:</b> ${d.licenseNum||'—'}</td><td></td></tr>
-<tr><td><b>יצרן:</b> ${d.manufacturer||'—'}</td><td><b>דגם:</b> ${d.model||'—'}</td><td></td></tr></table>
-<h2>פרטי הגעה</h2>
-<p style="font-size:12px">הגיע מ: ${d.arrivedFrom}${d.craneInstaller?' ('+d.craneInstaller+')':''}${d.coolingUnit?' ('+d.coolingUnit+')':''}${d.otherSource?' ('+d.otherSource+')':''} | נציג: ${d.rep} | אופן: ${d.arrivalMethod}</p>
-<h2>ממצאי בדיקה</h2><table>
-${row('גלגל רזרבי',d.spare)}${row('פנסי צד',d.sideLamps,d.sideLampQty)}${row('מתקן לגלגל',d.wheelHolder)}
-${row('וו גרירה',d.hook,d.hookState)}${row('פגוש אחורי',d.rearBumper)}${row('ברזי אויר',d.airTaps)}
-${row('סדי עצירה',d.brakes,d.brakesQty)}${row('תושבות רתום',d.hitchBracket,d.hitchBracketNote)}
-${row('מטף',d.extinguisher,d.extQty)}${row('מפתחות',d.keys,d.keysQty)}${row('עזרה ראשונה',d.firstAid)}
-${row('שלט',d.sign,d.signQty)}${row("מגבה",d.jack)}${row('כבל ABS',d.abs)}
-${row('מפתח גלגלים',d.wheelKey)}${row('משולש',d.triangle)}${row('ידיות',d.handles)}
-${row('אפוד זוהר',d.vest)}${row('מכסה מצבר',d.battCover)}${row('שלט למנוף',d.craneRemote)}
-${row('מכסה דלק',d.fuelCap)}${row('פנסים אחוריים',d.rearLights)}${row('מכסה אוריאה',d.ureaCap)}
-${row('קוטבי מצברים',d.battTerminals)}</table>
-<h2>מצב חיצוני</h2><p style="font-size:12px">${d.externalCondition||'—'}</p>
-<h2>לוח שעונים</h2><p style="font-size:12px">${d.dashboard}${d.dashboardFaults?' | תקלות: '+d.dashboardFaults:''}</p>
-${d.oldCarNotes?'<p style="font-size:12px">הערות: '+d.oldCarNotes+'</p>':''}
+
+<div class="hdr">
+  <div>
+    <div style="font-size:22px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div>
+    <div style="font-size:12px;color:#888">יצור מרכבים למשאיות</div>
+  </div>
+  <div class="badge">טופס קבלת רכב</div>
+</div>
+
+<h2>פרטי לקוח ורכב</h2>
+<table style="margin-bottom:10px"><tr>
+  <td class="td"><b>תאריך:</b> ${dateDisplay}</td>
+  <td class="td"><b>לקוח:</b> ${d.customerName||'—'}</td>
+  <td class="td"><b>טלפון:</b> ${d.phone||'—'}</td>
+</tr><tr>
+  <td class="td"><b>שלדה:</b> ${d.chassisNum||'—'}</td>
+  <td class="td"><b>רישוי:</b> ${d.licenseNum||'—'}</td>
+  <td class="td"><b>יצרן/דגם:</b> ${d.manufacturer||'—'} ${d.model||''}</td>
+</tr><tr>
+  <td class="td" colspan="2"><b>הגיע מ:</b> ${d.arrivedFrom}${d.craneInstaller?' ('+d.craneInstaller+')':''}${d.coolingUnit?' ('+d.coolingUnit+')':''}${d.otherSource?' ('+d.otherSource+')':''} &nbsp;|&nbsp; <b>נציג:</b> ${d.rep}</td>
+  <td class="td"><b>אופן הגעה:</b> ${d.arrivalMethod}</td>
+</tr></table>
+
+<h2>ממצאי בדיקה</h2>
+<table style="margin-bottom:10px">
+  ${col1.map((item,i) => {
+    const c2 = col2[i];
+    return `<tr>
+      ${cell(item[0],item[1],item[2])}
+      <td style="width:1%;border:none;padding:0 4px"></td>
+      ${c2 ? cell(c2[0],c2[1],c2[2]) : '<td colspan="2" style="border:none"></td>'}
+    </tr>`;
+  }).join('')}
+</table>
+
+<table style="margin-bottom:10px"><tr>
+  <td style="width:58%;vertical-align:top;padding-left:10px">
+    <h2>מצב חיצוני</h2>
+    <p style="font-size:13px;background:#f4f7fb;padding:7px 9px;border:1px solid #e0e0e0;border-radius:3px;min-height:38px">${d.externalCondition||'—'}</p>
+  </td>
+  <td style="width:42%;vertical-align:top">
+    <h2>לוח שעונים</h2>
+    <p style="font-size:13px;padding:3px 0"><b>סטטוס:</b> ${d.dashboard||'—'}</p>
+    ${d.dashboardFaults?`<p style="font-size:13px"><b>תקלות:</b> ${d.dashboardFaults}</p>`:''}
+    ${d.oldCarNotes?`<p style="font-size:13px"><b>הערות:</b> ${d.oldCarNotes}</p>`:''}
+  </td>
+</tr></table>
+
 <h2>חתימות</h2>
 <table><tr>
-<td style="text-align:center;width:50%"><div style="font-size:12px;font-weight:600">מוסר: ${d.delivererName||'—'}</div>${s1}</td>
-<td style="text-align:center;width:50%"><div style="font-size:12px;font-weight:600">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}</td>
+  <td style="text-align:center;width:50%;padding:12px 10px;border:1px solid #e0e0e0">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">מוסר הרכב: ${d.delivererName||'—'}</div>${s1}
+  </td>
+  <td style="text-align:center;width:50%;padding:12px 10px;border:1px solid #e0e0e0">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}
+  </td>
 </tr></table>
-<div style="margin-top:16px;font-size:10px;color:#999;text-align:center;border-top:1px solid #ddd;padding-top:6px">
-מס' טופס: קר 1 | עודכן: 20.01.2025 | רח' הקידמה 16, אשדוד | 08-9400967 | office@silagi.co.il</div>
+
+<div style="margin-top:10px;font-size:10px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:6px">
+  מס' טופס: קר 1 | עודכן: 20.01.2025 | ערך: עמית שגיא | אישר: מוטי שגיא | רח' הקידמה 16, אשדוד | 08-9400967 | office@silagi.co.il
+</div>
+
 </body></html>`;
-  const w = window.open('','_blank');
-  w.document.write(html); w.document.close(); w.focus();
-  setTimeout(()=>w.print(), 400);
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 400);
 }
 
 // ── Preview ──
