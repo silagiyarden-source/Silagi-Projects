@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>טופס קבלת רכב – סילגי 2000</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root {
+    --primary: #1a3a5c; --accent: #e8a020; --light: #f4f7fb; --border: #c8d6e8;
+    --text: #1e2d3d; --muted: #6b7f93; --white: #ffffff;
+    --success: #2ecc71; --danger: #e74c3c; --section-bg: #eef3f9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Heebo', sans-serif; background: var(--light); color: var(--text); padding-bottom: 40px; }
+
+  .header { background: var(--primary); color: var(--white); padding: 18px 20px 14px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 3px 16px rgba(0,0,0,0.25); }
+  .header-logo { font-size: 22px; font-weight: 900; color: var(--accent); }
+  .header-sub { font-size: 13px; color: #a8c4e0; margin-top: 3px; }
+  .form-title { background: var(--accent); color: var(--primary); text-align: center; padding: 12px 20px; font-size: 15px; font-weight: 700; }
+
+  .container { max-width: 680px; margin: 0 auto; padding: 0 12px; }
+
+  .section { background: var(--white); border-radius: 14px; margin: 16px 0; overflow: hidden; box-shadow: 0 2px 12px rgba(26,58,92,0.08); }
+  .section-header { background: var(--primary); color: var(--white); padding: 11px 18px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .section-body { padding: 16px; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .field-row.full { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.5px; }
+  .field input[type="text"], .field input[type="date"], .field input[type="tel"], .field textarea {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: 'Heebo', sans-serif; font-size: 14px; color: var(--text); background: var(--light);
+    transition: border-color 0.2s; -webkit-appearance: none;
+  }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .checklist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 420px) { .checklist-grid { grid-template-columns: 1fr; } .field-row { grid-template-columns: 1fr; } }
+
+  .check-item { background: var(--section-bg); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1.5px solid transparent; }
+  .check-label { font-size: 13px; font-weight: 500; flex: 1; }
+  .check-label .qty-input { display: block; width: 90px; margin-top: 4px; font-size: 11px; padding: 3px 7px; border: 1px solid var(--border); border-radius: 5px; background: #fff; font-family: 'Heebo', sans-serif; }
+
+  .toggle-group { display: flex; border-radius: 7px; overflow: hidden; border: 1.5px solid var(--border); flex-shrink: 0; }
+  .toggle-group input[type="radio"] { display: none; }
+  .toggle-group label { padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; background: #fff; color: var(--muted); user-select: none; }
+  .toggle-group label:not(:last-child) { border-left: 1.5px solid var(--border); }
+  .toggle-group input[value="yes"]:checked + label, .toggle-group input[value="ok"]:checked + label { background: var(--success); color: #fff; }
+  .toggle-group input[value="no"]:checked + label, .toggle-group input[value="notok"]:checked + label { background: var(--danger); color: #fff; }
+
+  .radio-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .radio-group input[type="radio"] { display: none; }
+  .radio-group label { padding: 8px 14px; border-radius: 20px; border: 1.5px solid var(--border); font-size: 13px; font-weight: 500; cursor: pointer; background: var(--section-bg); }
+  .radio-group input:checked + label { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  .sig-wrapper { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; }
+  .sig-wrapper canvas { display: block; width: 100%; cursor: crosshair; touch-action: none; }
+  .sig-controls { display: flex; justify-content: flex-end; padding: 6px 10px; background: var(--section-bg); border-top: 1px solid var(--border); }
+  .sig-clear { font-size: 12px; color: var(--danger); background: none; border: none; cursor: pointer; font-family: 'Heebo', sans-serif; font-weight: 600; }
+
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0 10px; }
+  .btn { padding: 14px; border-radius: 12px; font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn:active { opacity: 0.85; }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 16px rgba(26,58,92,0.25); }
+  .btn-accent { background: var(--accent); color: var(--primary); box-shadow: 0 4px 16px rgba(232,160,32,0.3); }
+
+  .footer { text-align: center; padding: 12px; font-size: 11px; color: var(--muted); }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--primary); color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,0.25); transition: transform 0.35s; z-index: 999; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media print {
+    body { background: #fff; }
+    .header { position: static; background: var(--primary) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .actions, .sig-controls { display: none !important; }
+    .section { box-shadow: none; border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">סילגי 2000 בע"מ</div>
+  <div class="header-sub">יצור מרכבים למשאיות</div>
+</div>
+<div class="form-title">📋 טופס קבלת רכב – רכב ללא טופס מסירה מיבואן או רכב ישן</div>
+
+<div class="container">
+
+  <div class="section">
+    <div class="section-header">👤 פרטי לקוח ותאריך</div>
+    <div class="section-body">
+      <div class="field-row">
+        <div class="field"><label>תאריך</label><input type="date" id="date"></div>
+        <div class="field"><label>טלפון</label><input type="tel" id="phone" placeholder="05X-XXXXXXX"></div>
+      </div>
+      <div class="field-row full">
+        <div class="field"><label>שם הלקוח</label><input type="text" id="customerName" placeholder="שם מלא"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">🚛 פרטי הרכב</div>
+    <div class="section-body">
+      <div class="field-row">
+        <div class="field"><label>מספר שלדה</label><input type="text" id="chassisNum" placeholder="VIN"></div>
+        <div class="field"><label>מס' רישוי</label><input type="text" id="licenseNum" placeholder="XX-XXX-XX"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>יצרן</label><input type="text" id="manufacturer" placeholder="Mercedes, Volvo..."></div>
+        <div class="field"><label>דגם</label><input type="text" id="model" placeholder="דגם"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">📍 פרטי הגעה</div>
+    <div class="section-body">
+      <div class="field-row full" style="margin-bottom:10px">
+        <div class="field">
+          <label>הגיע מ</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+            <label style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:4px"><input type="radio" name="arrivedFrom" value="יבואן הרכב"> יבואן הרכב</label>
+            <div style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:500">
+              <input type="radio" name="arrivedFrom" value="מתקין מנוף"> מתקין מנוף:
+              <input type="text" id="craneInstaller" placeholder="שם" style="width:90px;padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:Heebo,sans-serif">
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:500">
+              <input type="radio" name="arrivedFrom" value="יח' קירור"> יח' קירור:
+              <input type="text" id="coolingUnit" placeholder="שם" style="width:90px;padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:Heebo,sans-serif">
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:500">
+              <input type="radio" name="arrivedFrom" value="אחר"> אחר:
+              <input type="text" id="otherSource" style="width:90px;padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-family:Heebo,sans-serif">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field-row full" style="margin-bottom:10px">
+        <div class="field">
+          <label>ע"י נציג</label>
+          <div class="radio-group" style="margin-top:4px">
+            <input type="radio" name="rep" id="r1" value="חברת המשאיות"><label for="r1">חברת המשאיות</label>
+            <input type="radio" name="rep" id="r2" value="מתקין המנוף"><label for="r2">מתקין המנוף</label>
+            <input type="radio" name="rep" id="r3" value="מטפל ברישוי"><label for="r3">מטפל ברישוי</label>
+            <input type="radio" name="rep" id="r4" value="הלקוח"><label for="r4">הלקוח</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>אופן הגעה</label>
+        <div class="radio-group" style="margin-top:4px">
+          <input type="radio" name="arrivalMethod" id="m1" value="בנסיעה"><label for="m1">🚗 בנסיעה</label>
+          <input type="radio" name="arrivalMethod" id="m2" value="בגרירה"><label for="m2">🔗 בגרירה</label>
+          <input type="radio" name="arrivalMethod" id="m3" value="ע״ג מובילית"><label for="m3">🚚 ע"ג מובילית</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">✅ תיאור ממצאי הבדיקה</div>
+    <div class="section-body">
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px">פריט שנבדק יסומן ב-יש או אין. אם לא נבדק – לא יסומן.</p>
+      <div class="checklist-grid">
+        <div class="check-item"><span class="check-label">גלגל רזרבי</span><div class="toggle-group"><input type="radio" name="spare" id="spare_y" value="yes"><label for="spare_y">יש</label><input type="radio" name="spare" id="spare_n" value="no"><label for="spare_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">פנסי צד וצמות<input class="qty-input" type="text" id="sideLampQty" placeholder="כמות"></span><div class="toggle-group"><input type="radio" name="sideLamps" id="sl_y" value="yes"><label for="sl_y">יש</label><input type="radio" name="sideLamps" id="sl_n" value="no"><label for="sl_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">מתקן לגלגל</span><div class="toggle-group"><input type="radio" name="wheelHolder" id="wh_y" value="yes"><label for="wh_y">יש</label><input type="radio" name="wheelHolder" id="wh_n" value="no"><label for="wh_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">וו גרירה<span style="font-size:11px;display:block;margin-top:3px"><label style="font-weight:400"><input type="radio" name="hookState" value="מורכב"> מורכב</label> <label style="font-weight:400"><input type="radio" name="hookState" value="מפורק"> מפורק</label></span></span><div class="toggle-group"><input type="radio" name="hook" id="hook_y" value="yes"><label for="hook_y">יש</label><input type="radio" name="hook" id="hook_n" value="no"><label for="hook_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">פגוש אחורי</span><div class="toggle-group"><input type="radio" name="rearBumper" id="rb_y" value="yes"><label for="rb_y">יש</label><input type="radio" name="rearBumper" id="rb_n" value="no"><label for="rb_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">ברזי אויר לנ"ל</span><div class="toggle-group"><input type="radio" name="airTaps" id="at_y" value="yes"><label for="at_y">יש</label><input type="radio" name="airTaps" id="at_n" value="no"><label for="at_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">סדי עצירה<input class="qty-input" type="text" id="brakesQty" placeholder="כמות"></span><div class="toggle-group"><input type="radio" name="brakes" id="br_y" value="yes"><label for="br_y">יש</label><input type="radio" name="brakes" id="br_n" value="no"><label for="br_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">תושבות רתום<input class="qty-input" type="text" id="hitchBracketNote" placeholder="הערה"></span><div class="toggle-group"><input type="radio" name="hitchBracket" id="hb_y" value="yes"><label for="hb_y">יש</label><input type="radio" name="hitchBracket" id="hb_n" value="no"><label for="hb_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">מטף<input class="qty-input" type="text" id="extQty" placeholder="כמות"></span><div class="toggle-group"><input type="radio" name="extinguisher" id="ex_y" value="yes"><label for="ex_y">יש</label><input type="radio" name="extinguisher" id="ex_n" value="no"><label for="ex_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">מפתחות<input class="qty-input" type="text" id="keysQty" placeholder="כמות"></span><div class="toggle-group"><input type="radio" name="keys" id="keys_y" value="yes"><label for="keys_y">יש</label><input type="radio" name="keys" id="keys_n" value="no"><label for="keys_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">עזרה ראשונה</span><div class="toggle-group"><input type="radio" name="firstAid" id="fa_y" value="yes"><label for="fa_y">יש</label><input type="radio" name="firstAid" id="fa_n" value="no"><label for="fa_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">שלט<input class="qty-input" type="text" id="signQty" placeholder="כמות"></span><div class="toggle-group"><input type="radio" name="sign" id="sign_y" value="yes"><label for="sign_y">יש</label><input type="radio" name="sign" id="sign_n" value="no"><label for="sign_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">מגבה (ג'ק)</span><div class="toggle-group"><input type="radio" name="jack" id="jack_y" value="yes"><label for="jack_y">יש</label><input type="radio" name="jack" id="jack_n" value="no"><label for="jack_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">כבל ABS</span><div class="toggle-group"><input type="radio" name="abs" id="abs_y" value="yes"><label for="abs_y">יש</label><input type="radio" name="abs" id="abs_n" value="no"><label for="abs_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">מפתח גלגלים</span><div class="toggle-group"><input type="radio" name="wheelKey" id="wk_y" value="yes"><label for="wk_y">יש</label><input type="radio" name="wheelKey" id="wk_n" value="no"><label for="wk_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">משולש</span><div class="toggle-group"><input type="radio" name="triangle" id="tri_y" value="yes"><label for="tri_y">יש</label><input type="radio" name="triangle" id="tri_n" value="no"><label for="tri_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">ידיות</span><div class="toggle-group"><input type="radio" name="handles" id="han_y" value="yes"><label for="han_y">יש</label><input type="radio" name="handles" id="han_n" value="no"><label for="han_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">אפוד זוהר</span><div class="toggle-group"><input type="radio" name="vest" id="vest_y" value="yes"><label for="vest_y">יש</label><input type="radio" name="vest" id="vest_n" value="no"><label for="vest_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">מכסה מצבר</span><div class="toggle-group"><input type="radio" name="battCover" id="bc_y" value="yes"><label for="bc_y">יש</label><input type="radio" name="battCover" id="bc_n" value="no"><label for="bc_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">שלט למנוף</span><div class="toggle-group"><input type="radio" name="craneRemote" id="cr_y" value="yes"><label for="cr_y">יש</label><input type="radio" name="craneRemote" id="cr_n" value="no"><label for="cr_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">מכסה דלק</span><div class="toggle-group"><input type="radio" name="fuelCap" id="fc_y" value="yes"><label for="fc_y">יש</label><input type="radio" name="fuelCap" id="fc_n" value="no"><label for="fc_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">פנסים אחוריים תקין</span><div class="toggle-group"><input type="radio" name="rearLights" id="rl_ok" value="ok"><label for="rl_ok">כן</label><input type="radio" name="rearLights" id="rl_nok" value="notok"><label for="rl_nok">לא</label></div></div>
+        <div class="check-item"><span class="check-label">מכסה אוריאה</span><div class="toggle-group"><input type="radio" name="ureaCap" id="uc_y" value="yes"><label for="uc_y">יש</label><input type="radio" name="ureaCap" id="uc_n" value="no"><label for="uc_n">אין</label></div></div>
+        <div class="check-item"><span class="check-label">קוטבי מצברים תקין</span><div class="toggle-group"><input type="radio" name="battTerminals" id="bt_ok" value="ok"><label for="bt_ok">כן</label><input type="radio" name="battTerminals" id="bt_nok" value="notok"><label for="bt_nok">לא</label></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">🔍 מצב חיצוני</div>
+    <div class="section-body">
+      <div class="field full"><label>פגמים, לכלוך, שמשות, מראות, צמיגים</label><textarea id="externalCondition" placeholder="תאר מצב חיצוני..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">⚙️ לוח שעונים</div>
+    <div class="section-body">
+      <div class="field">
+        <label>סטטוס לוח שעונים</label>
+        <div class="radio-group" style="margin-top:4px">
+          <input type="radio" name="dashboard" id="db1" value="נבדק תקין"><label for="db1">✅ נבדק – תקין</label>
+          <input type="radio" name="dashboard" id="db2" value="לא נבדק"><label for="db2">⬜ לא נבדק</label>
+          <input type="radio" name="dashboard" id="db3" value="נבדק יש תקלות"><label for="db3">⚠️ יש תקלות</label>
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px"><label>פירוט תקלות</label><textarea id="dashboardFaults" placeholder="פרט תקלות..."></textarea></div>
+      <div class="field" style="margin-top:12px"><label>הערות רכב ישן</label><textarea id="oldCarNotes" placeholder="אורות, חלונות חשמל וכו'..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">✍️ חתימות</div>
+    <div class="section-body">
+      <div class="field-row full" style="margin-bottom:16px"><div class="field"><label>מוסר הרכב – שם ומשפחה</label><input type="text" id="delivererName" placeholder="שם מלא"></div></div>
+      <div class="field"><label>חתימת מוסר הרכב</label><div class="sig-wrapper"><canvas id="sig1" height="120"></canvas><div class="sig-controls"><button class="sig-clear" onclick="clearSig('sig1')">× נקה</button></div></div></div>
+      <div style="height:16px"></div>
+      <div class="field-row full" style="margin-bottom:16px"><div class="field"><label>נציג סילגי – שם ומשפחה</label><input type="text" id="silagyRep" placeholder="שם מלא"></div></div>
+      <div class="field"><label>חתימת נציג סילגי</label><div class="sig-wrapper"><canvas id="sig2" height="120"></canvas><div class="sig-controls"><button class="sig-clear" onclick="clearSig('sig2')">× נקה</button></div></div></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-accent" onclick="printForm()">🖨️ הדפסה / PDF</button>
+    <button class="btn btn-primary" id="emailBtn" onclick="showPreview()">📧 שליחה למייל</button>
+  </div>
+
+  <div class="footer">
+    מס' טופס: קר 1 | מהד': ג' | עודכן: 20.01.2025<br>
+    ערך: עמית שגיא | אישר: מוטי שגיא<br>
+    רח' הקידמה 16, א.ת. צפוני, אשדוד | 08-9400967
+  </div>
+</div>
+
+<!-- PREVIEW MODAL -->
+<div id="previewOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;overflow-y:auto;padding:16px">
+  <div style="background:#fff;border-radius:16px;max-width:680px;margin:0 auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4)">
+    <div style="background:#1a3a5c;color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:15px;font-weight:700">📋 תצוגה מקדימה – לפני שליחה</span>
+      <button onclick="closePreview()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div id="previewBody" style="padding:16px;font-family:Heebo,sans-serif;font-size:13px;direction:rtl"></div>
+    <div style="padding:12px 16px;background:#f4f7fb;border-top:1px solid #c8d6e8">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onclick="closePreview()" style="padding:13px;border-radius:10px;border:none;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;background:#c8d6e8;color:#1e2d3d;cursor:pointer">✏️ חזור לעריכה</button>
+        <button id="confirmSendBtn" onclick="openPDF()" style="padding:13px;border-radius:10px;border:none;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;background:#1a3a5c;color:#fff;cursor:pointer">📄 פתח PDF לשיתוף</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── EmailJS ──
+emailjs.init('pZuPSepvxlR5oV3RX');
+
+// ── Signatures ──
+const sigData = {};
+function initSig(id) {
+  const canvas = document.getElementById(id);
+  const ctx = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth * devicePixelRatio;
+  canvas.height = 120 * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  canvas.style.height = '120px';
+  let drawing = false;
+  const pos = e => { const r = canvas.getBoundingClientRect(), s = e.touches?e.touches[0]:e; return [s.clientX-r.left, s.clientY-r.top]; };
+  canvas.addEventListener('mousedown',  e => { drawing=true; const [x,y]=pos(e); ctx.beginPath(); ctx.moveTo(x,y); e.preventDefault(); });
+  canvas.addEventListener('mousemove',  e => { if(!drawing) return; const [x,y]=pos(e); ctx.strokeStyle='#1a3a5c'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y); sigData[id]=canvas.toDataURL(); e.preventDefault(); });
+  canvas.addEventListener('mouseup',    () => { drawing=false; ctx.beginPath(); });
+  canvas.addEventListener('touchstart', e => { drawing=true; const [x,y]=pos(e); ctx.beginPath(); ctx.moveTo(x,y); e.preventDefault(); }, {passive:false});
+  canvas.addEventListener('touchmove',  e => { if(!drawing) return; const [x,y]=pos(e); ctx.strokeStyle='#1a3a5c'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y); sigData[id]=canvas.toDataURL(); e.preventDefault(); }, {passive:false});
+  canvas.addEventListener('touchend',   () => { drawing=false; ctx.beginPath(); });
+}
+function clearSig(id) { const c=document.getElementById(id); c.getContext('2d').clearRect(0,0,c.width,c.height); sigData[id]=''; }
+
+window.addEventListener('load', () => {
+  initSig('sig1'); initSig('sig2');
+  document.getElementById('date').valueAsDate = new Date();
+});
+
+// ── Helpers ──
+const gv  = id   => { const e=document.getElementById(id); return e?e.value.trim():''; };
+const gr  = name => { const e=document.querySelector(`input[name="${name}"]:checked`); return e?e.value:'—'; };
+const yn  = v    => v==='yes'?'יש':v==='no'?'אין':v==='ok'?'תקין':v==='notok'?'לא תקין':v||'—';
+
+function collectData() {
+  return {
+    date:gv('date'), customerName:gv('customerName'), phone:gv('phone'),
+    chassisNum:gv('chassisNum'), licenseNum:gv('licenseNum'),
+    manufacturer:gv('manufacturer'), model:gv('model'),
+    arrivedFrom:gr('arrivedFrom'), craneInstaller:gv('craneInstaller'),
+    coolingUnit:gv('coolingUnit'), otherSource:gv('otherSource'),
+    rep:gr('rep'), arrivalMethod:gr('arrivalMethod'),
+    spare:gr('spare'), sideLamps:gr('sideLamps'), sideLampQty:gv('sideLampQty'),
+    wheelHolder:gr('wheelHolder'), hook:gr('hook'), hookState:gr('hookState'),
+    rearBumper:gr('rearBumper'), airTaps:gr('airTaps'),
+    brakes:gr('brakes'), brakesQty:gv('brakesQty'),
+    hitchBracket:gr('hitchBracket'), hitchBracketNote:gv('hitchBracketNote'),
+    extinguisher:gr('extinguisher'), extQty:gv('extQty'),
+    keys:gr('keys'), keysQty:gv('keysQty'), firstAid:gr('firstAid'),
+    sign:gr('sign'), signQty:gv('signQty'), jack:gr('jack'),
+    abs:gr('abs'), wheelKey:gr('wheelKey'), triangle:gr('triangle'),
+    handles:gr('handles'), vest:gr('vest'), battCover:gr('battCover'),
+    craneRemote:gr('craneRemote'), fuelCap:gr('fuelCap'),
+    rearLights:gr('rearLights'), ureaCap:gr('ureaCap'), battTerminals:gr('battTerminals'),
+    externalCondition:gv('externalCondition'),
+    dashboard:gr('dashboard'), dashboardFaults:gv('dashboardFaults'), oldCarNotes:gv('oldCarNotes'),
+    delivererName:gv('delivererName'), silagyRep:gv('silagyRep'),
+  };
+}
+
+// ── Print ──
+function printForm() {
+  const d = collectData();
+
+  const items = [
+    ['גלגל רזרבי',d.spare,''],
+    ['פנסי צד וצמות',d.sideLamps,d.sideLampQty],
+    ['מתקן לגלגל',d.wheelHolder,''],
+    ['וו גרירה',d.hook,d.hookState],
+    ['פגוש אחורי',d.rearBumper,''],
+    ['ברזי אויר לנ"ל',d.airTaps,''],
+    ['סדי עצירה',d.brakes,d.brakesQty],
+    ['תושבות רתום',d.hitchBracket,d.hitchBracketNote],
+    ['מטף',d.extinguisher,d.extQty],
+    ['מפתחות',d.keys,d.keysQty],
+    ['עזרה ראשונה',d.firstAid,''],
+    ['שלט',d.sign,d.signQty],
+    ["מגבה (ג'ק)",d.jack,''],
+    ['כבל ABS',d.abs,''],
+    ['מפתח גלגלים',d.wheelKey,''],
+    ['משולש',d.triangle,''],
+    ['ידיות',d.handles,''],
+    ['אפוד זוהר',d.vest,''],
+    ['מכסה מצבר',d.battCover,''],
+    ['שלט למנוף',d.craneRemote,''],
+    ['מכסה דלק',d.fuelCap,''],
+    ['פנסים אחוריים',d.rearLights,''],
+    ['מכסה אוריאה',d.ureaCap,''],
+    ['קוטבי מצברים',d.battTerminals,''],
+  ];
+
+  const half = Math.ceil(items.length / 2);
+  const col1 = items.slice(0, half);
+  const col2 = items.slice(half);
+
+  const cell = (l,v,x) => {
+    const color = (v==='yes'||v==='ok')?'#27ae60':(v==='no'||v==='notok')?'#e74c3c':'#555';
+    const label = v==='yes'?'יש':v==='no'?'אין':v==='ok'?'תקין':v==='notok'?'לא תקין':v||'—';
+    const extra = x ? ` <span style="color:#999;font-size:10px">(${x})</span>` : '';
+    return `<td style="padding:6px 9px;border:1px solid #e0e0e0;font-size:13px;width:32%">${l}${extra}</td>
+            <td style="padding:6px 9px;border:1px solid #e0e0e0;font-size:13px;font-weight:700;color:${color};width:18%;text-align:center">${label}</td>`;
+  };
+
+  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:55px">`:'<span style="font-size:11px;color:#bbb">אין חתימה</span>';
+  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:55px">`:'<span style="font-size:11px;color:#bbb">אין חתימה</span>';
+
+  // Format date LTR – reverse YYYY-MM-DD to DD-MM-YYYY
+  let dateDisplay = '—';
+  if (d.date) {
+    const parts = d.date.split('-');
+    if (parts.length === 3) dateDisplay = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    else dateDisplay = d.date;
+  }
+
+  const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;padding:16px 20px;direction:rtl}
+  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a3a5c;padding-bottom:10px;margin-bottom:14px}
+  .badge{background:#e8a020;color:#1a3a5c;padding:5px 14px;border-radius:4px;font-size:13px;font-weight:700}
+  h2{font-size:13px;font-weight:700;color:#1a3a5c;background:#eef3f9;border-right:3px solid #e8a020;padding:5px 9px;margin:12px 0 6px}
+  table{width:100%;border-collapse:collapse}
+  .td{padding:6px 9px;border:1px solid #e0e0e0;font-size:13px}
+  @page{margin:9mm;size:A4}
+</style>
+</head><body>
+
+<div class="hdr">
+  <div>
+    <div style="font-size:22px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div>
+    <div style="font-size:12px;color:#888">יצור מרכבים למשאיות</div>
+  </div>
+  <div class="badge">טופס קבלת רכב</div>
+</div>
+
+<h2>פרטי לקוח ורכב</h2>
+<table style="margin-bottom:10px"><tr>
+  <td class="td"><b>תאריך:</b> ${dateDisplay}</td>
+  <td class="td"><b>לקוח:</b> ${d.customerName||'—'}</td>
+  <td class="td"><b>טלפון:</b> ${d.phone||'—'}</td>
+</tr><tr>
+  <td class="td"><b>שלדה:</b> ${d.chassisNum||'—'}</td>
+  <td class="td"><b>רישוי:</b> ${d.licenseNum||'—'}</td>
+  <td class="td"><b>יצרן/דגם:</b> ${d.manufacturer||'—'} ${d.model||''}</td>
+</tr><tr>
+  <td class="td" colspan="2"><b>הגיע מ:</b> ${d.arrivedFrom}${d.craneInstaller?' ('+d.craneInstaller+')':''}${d.coolingUnit?' ('+d.coolingUnit+')':''}${d.otherSource?' ('+d.otherSource+')':''} &nbsp;|&nbsp; <b>נציג:</b> ${d.rep}</td>
+  <td class="td"><b>אופן הגעה:</b> ${d.arrivalMethod}</td>
+</tr></table>
+
+<h2>ממצאי בדיקה</h2>
+<table style="margin-bottom:10px">
+  ${col1.map((item,i) => {
+    const c2 = col2[i];
+    return `<tr>
+      ${cell(item[0],item[1],item[2])}
+      <td style="width:1%;border:none;padding:0 4px"></td>
+      ${c2 ? cell(c2[0],c2[1],c2[2]) : '<td colspan="2" style="border:none"></td>'}
+    </tr>`;
+  }).join('')}
+</table>
+
+<table style="margin-bottom:10px"><tr>
+  <td style="width:58%;vertical-align:top;padding-left:10px">
+    <h2>מצב חיצוני</h2>
+    <p style="font-size:13px;background:#f4f7fb;padding:7px 9px;border:1px solid #e0e0e0;border-radius:3px;min-height:38px">${d.externalCondition||'—'}</p>
+  </td>
+  <td style="width:42%;vertical-align:top">
+    <h2>לוח שעונים</h2>
+    <p style="font-size:13px;padding:3px 0"><b>סטטוס:</b> ${d.dashboard||'—'}</p>
+    ${d.dashboardFaults?`<p style="font-size:13px"><b>תקלות:</b> ${d.dashboardFaults}</p>`:''}
+    ${d.oldCarNotes?`<p style="font-size:13px"><b>הערות:</b> ${d.oldCarNotes}</p>`:''}
+  </td>
+</tr></table>
+
+<h2>חתימות</h2>
+<table><tr>
+  <td style="text-align:center;width:50%;padding:12px 10px;border:1px solid #e0e0e0">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">מוסר הרכב: ${d.delivererName||'—'}</div>${s1}
+  </td>
+  <td style="text-align:center;width:50%;padding:12px 10px;border:1px solid #e0e0e0">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}
+  </td>
+</tr></table>
+
+<div style="margin-top:10px;font-size:10px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:6px">
+  מס' טופס: קר 1 | עודכן: 20.01.2025 | ערך: עמית שגיא | אישר: מוטי שגיא | רח' הקידמה 16, אשדוד | 08-9400967 | office@silagi.co.il
+</div>
+
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 400);
+}
+
+// ── Preview ──
+function buildPreviewHTML(d) {
+  const row = (l,v,x='') => {
+    const color = (v==='yes'||v==='ok')?'#27ae60':(v==='no'||v==='notok')?'#e74c3c':'#555';
+    const label = v==='yes'?'✅ יש':v==='no'?'❌ אין':v==='ok'?'✅ תקין':v==='notok'?'❌ לא תקין':v||'—';
+    return `<tr>
+      <td style="padding:5px 8px;border:1px solid #ddd;font-size:12px">${l}</td>
+      <td style="padding:5px 8px;border:1px solid #ddd;font-size:12px;font-weight:600;color:${color}">${label}${x?' <span style="color:#555;font-weight:400">| '+x+'</span>':''}</td>
+    </tr>`;
+  };
+  const s1 = sigData.sig1 ? `<img src="${sigData.sig1}" style="max-height:50px">` : '<span style="color:#999">אין חתימה</span>';
+  const s2 = sigData.sig2 ? `<img src="${sigData.sig2}" style="max-height:50px">` : '<span style="color:#999">אין חתימה</span>';
+
+  return `
+    <div style="border-bottom:2px solid #e8a020;padding-bottom:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:16px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div><div style="font-size:11px;color:#888">יצור מרכבים למשאיות</div></div>
+      <div style="background:#e8a020;color:#1a3a5c;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700">טופס קבלת רכב</div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;color:#1a3a5c;border-bottom:2px solid #e8a020;margin:10px 0 6px">פרטי לקוח</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:8px">
+      <tr><td style="padding:4px 8px;border:1px solid #ddd;font-size:12px"><b>תאריך:</b> ${d.date||'—'}</td><td style="padding:4px 8px;border:1px solid #ddd;font-size:12px"><b>לקוח:</b> ${d.customerName||'—'}</td><td style="padding:4px 8px;border:1px solid #ddd;font-size:12px"><b>טלפון:</b> ${d.phone||'—'}</td></tr>
+      <tr><td style="padding:4px 8px;border:1px solid #ddd;font-size:12px"><b>שלדה:</b> ${d.chassisNum||'—'}</td><td style="padding:4px 8px;border:1px solid #ddd;font-size:12px"><b>רישוי:</b> ${d.licenseNum||'—'}</td><td style="padding:4px 8px;border:1px solid #ddd;font-size:12px"><b>יצרן/דגם:</b> ${d.manufacturer||'—'} ${d.model||''}</td></tr>
+    </table>
+
+    <div style="font-size:13px;font-weight:700;color:#1a3a5c;border-bottom:2px solid #e8a020;margin:10px 0 6px">פרטי הגעה</div>
+    <p style="font-size:12px;margin-bottom:8px">הגיע מ: <b>${d.arrivedFrom}${d.craneInstaller?' ('+d.craneInstaller+')':''}${d.coolingUnit?' ('+d.coolingUnit+')':''}${d.otherSource?' ('+d.otherSource+')':''}</b> | נציג: <b>${d.rep}</b> | אופן: <b>${d.arrivalMethod}</b></p>
+
+    <div style="font-size:13px;font-weight:700;color:#1a3a5c;border-bottom:2px solid #e8a020;margin:10px 0 6px">ממצאי בדיקה</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:8px">
+      ${row('גלגל רזרבי',d.spare)}${row('פנסי צד וצמות',d.sideLamps,d.sideLampQty)}
+      ${row('מתקן לגלגל',d.wheelHolder)}${row('וו גרירה',d.hook,d.hookState)}
+      ${row('פגוש אחורי',d.rearBumper)}${row('ברזי אויר לנ"ל',d.airTaps)}
+      ${row('סדי עצירה',d.brakes,d.brakesQty)}${row('תושבות רתום',d.hitchBracket,d.hitchBracketNote)}
+      ${row('מטף',d.extinguisher,d.extQty)}${row('מפתחות',d.keys,d.keysQty)}
+      ${row('עזרה ראשונה',d.firstAid)}${row('שלט',d.sign,d.signQty)}
+      ${row("מגבה (ג'ק)",d.jack)}${row('כבל ABS',d.abs)}
+      ${row('מפתח גלגלים',d.wheelKey)}${row('משולש',d.triangle)}
+      ${row('ידיות',d.handles)}${row('אפוד זוהר',d.vest)}
+      ${row('מכסה מצבר',d.battCover)}${row('שלט למנוף',d.craneRemote)}
+      ${row('מכסה דלק',d.fuelCap)}${row('פנסים אחוריים',d.rearLights)}
+      ${row('מכסה אוריאה',d.ureaCap)}${row('קוטבי מצברים',d.battTerminals)}
+    </table>
+
+    <div style="font-size:13px;font-weight:700;color:#1a3a5c;border-bottom:2px solid #e8a020;margin:10px 0 6px">מצב חיצוני</div>
+    <p style="font-size:12px;background:#f4f7fb;padding:8px;border-radius:6px;border:1px solid #ddd;margin-bottom:8px">${d.externalCondition||'—'}</p>
+
+    <div style="font-size:13px;font-weight:700;color:#1a3a5c;border-bottom:2px solid #e8a020;margin:10px 0 6px">לוח שעונים</div>
+    <p style="font-size:12px;margin-bottom:4px"><b>סטטוס:</b> ${d.dashboard||'—'}</p>
+    ${d.dashboardFaults?`<p style="font-size:12px"><b>תקלות:</b> ${d.dashboardFaults}</p>`:''}
+    ${d.oldCarNotes?`<p style="font-size:12px"><b>הערות:</b> ${d.oldCarNotes}</p>`:''}
+
+    <div style="font-size:13px;font-weight:700;color:#1a3a5c;border-bottom:2px solid #e8a020;margin:10px 0 6px">חתימות</div>
+    <table style="width:100%"><tr>
+      <td style="text-align:center;width:50%;padding:8px"><div style="font-size:12px;font-weight:600;margin-bottom:4px">מוסר: ${d.delivererName||'—'}</div>${s1}</td>
+      <td style="text-align:center;width:50%;padding:8px"><div style="font-size:12px;font-weight:600;margin-bottom:4px">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}</td>
+    </tr></table>
+
+    <div style="margin-top:12px;font-size:10px;color:#999;text-align:center;border-top:1px solid #ddd;padding-top:6px">
+      מס' טופס: קר 1 | עודכן: 20.01.2025 | רח' הקידמה 16, אשדוד | 08-9400967 | office@silagi.co.il
+    </div>`;
+}
+
+function showPreview() {
+  const d = collectData();
+  document.getElementById('previewBody').innerHTML = buildPreviewHTML(d);
+  document.getElementById('previewOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closePreview() {
+  document.getElementById('previewOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function openPDF() {
+  const d = collectData();
+
+  const items = [
+    ['גלגל רזרבי',d.spare,''],
+    ['פנסי צד וצמות',d.sideLamps,d.sideLampQty],
+    ['מתקן לגלגל',d.wheelHolder,''],
+    ['וו גרירה',d.hook,d.hookState],
+    ['פגוש אחורי',d.rearBumper,''],
+    ['ברזי אויר לנ"ל',d.airTaps,''],
+    ['סדי עצירה',d.brakes,d.brakesQty],
+    ['תושבות רתום',d.hitchBracket,d.hitchBracketNote],
+    ['מטף',d.extinguisher,d.extQty],
+    ['מפתחות',d.keys,d.keysQty],
+    ['עזרה ראשונה',d.firstAid,''],
+    ['שלט',d.sign,d.signQty],
+    ["מגבה (ג'ק)",d.jack,''],
+    ['כבל ABS',d.abs,''],
+    ['מפתח גלגלים',d.wheelKey,''],
+    ['משולש',d.triangle,''],
+    ['ידיות',d.handles,''],
+    ['אפוד זוהר',d.vest,''],
+    ['מכסה מצבר',d.battCover,''],
+    ['שלט למנוף',d.craneRemote,''],
+    ['מכסה דלק',d.fuelCap,''],
+    ['פנסים אחוריים',d.rearLights,''],
+    ['מכסה אוריאה',d.ureaCap,''],
+    ['קוטבי מצברים',d.battTerminals,''],
+  ];
+
+  const half = Math.ceil(items.length / 2);
+  const col1 = items.slice(0, half);
+  const col2 = items.slice(half);
+
+  const cell = (l,v,x) => {
+    const color = (v==='yes'||v==='ok')?'#27ae60':(v==='no'||v==='notok')?'#e74c3c':'#555';
+    const label = v==='yes'?'יש':v==='no'?'אין':v==='ok'?'תקין':v==='notok'?'לא תקין':v||'—';
+    const extra = x ? ` <span style="color:#999;font-size:10px">(${x})</span>` : '';
+    return `<td style="padding:6px 9px;border:1px solid #e0e0e0;font-size:13px;width:32%">${l}${extra}</td>
+            <td style="padding:6px 9px;border:1px solid #e0e0e0;font-size:13px;font-weight:700;color:${color};width:18%;text-align:center">${label}</td>`;
+  };
+
+  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:55px">`:'<span style="font-size:11px;color:#bbb">אין חתימה</span>';
+  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:55px">`:'<span style="font-size:11px;color:#bbb">אין חתימה</span>';
+
+  let dateDisplay = '—';
+  if (d.date) {
+    const parts = d.date.split('-');
+    if (parts.length === 3) dateDisplay = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    else dateDisplay = d.date;
+  }
+
+  const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;padding:16px 20px;direction:rtl}
+  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a3a5c;padding-bottom:10px;margin-bottom:14px}
+  .badge{background:#e8a020;color:#1a3a5c;padding:5px 14px;border-radius:4px;font-size:13px;font-weight:700}
+  h2{font-size:13px;font-weight:700;color:#1a3a5c;background:#eef3f9;border-right:3px solid #e8a020;padding:5px 9px;margin:12px 0 6px}
+  table{width:100%;border-collapse:collapse}
+  .td{padding:6px 9px;border:1px solid #e0e0e0;font-size:13px}
+  @page{margin:9mm;size:A4}
+</style>
+</head><body>
+<div class="hdr">
+  <div>
+    <div style="font-size:22px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div>
+    <div style="font-size:12px;color:#888">יצור מרכבים למשאיות</div>
+  </div>
+  <div class="badge">טופס קבלת רכב</div>
+</div>
+<h2>פרטי לקוח ורכב</h2>
+<table style="margin-bottom:10px"><tr>
+  <td class="td"><b>תאריך:</b> ${dateDisplay}</td>
+  <td class="td"><b>לקוח:</b> ${d.customerName||'—'}</td>
+  <td class="td"><b>טלפון:</b> ${d.phone||'—'}</td>
+</tr><tr>
+  <td class="td"><b>שלדה:</b> ${d.chassisNum||'—'}</td>
+  <td class="td"><b>רישוי:</b> ${d.licenseNum||'—'}</td>
+  <td class="td"><b>יצרן/דגם:</b> ${d.manufacturer||'—'} ${d.model||''}</td>
+</tr><tr>
+  <td class="td" colspan="2"><b>הגיע מ:</b> ${d.arrivedFrom}${d.craneInstaller?' ('+d.craneInstaller+')':''}${d.coolingUnit?' ('+d.coolingUnit+')':''}${d.otherSource?' ('+d.otherSource+')':''} &nbsp;|&nbsp; <b>נציג:</b> ${d.rep}</td>
+  <td class="td"><b>אופן הגעה:</b> ${d.arrivalMethod}</td>
+</tr></table>
+<h2>ממצאי בדיקה</h2>
+<table style="margin-bottom:10px">
+  ${col1.map((item,i) => {
+    const c2 = col2[i];
+    return `<tr>${cell(item[0],item[1],item[2])}<td style="width:1%;border:none;padding:0 4px"></td>${c2?cell(c2[0],c2[1],c2[2]):'<td colspan="2" style="border:none"></td>'}</tr>`;
+  }).join('')}
+</table>
+<table style="margin-bottom:10px"><tr>
+  <td style="width:58%;vertical-align:top;padding-left:10px">
+    <h2>מצב חיצוני</h2>
+    <p style="font-size:13px;background:#f4f7fb;padding:7px 9px;border:1px solid #e0e0e0;border-radius:3px;min-height:38px">${d.externalCondition||'—'}</p>
+  </td>
+  <td style="width:42%;vertical-align:top">
+    <h2>לוח שעונים</h2>
+    <p style="font-size:13px;padding:3px 0"><b>סטטוס:</b> ${d.dashboard||'—'}</p>
+    ${d.dashboardFaults?`<p style="font-size:13px"><b>תקלות:</b> ${d.dashboardFaults}</p>`:''}
+    ${d.oldCarNotes?`<p style="font-size:13px"><b>הערות:</b> ${d.oldCarNotes}</p>`:''}
+  </td>
+</tr></table>
+<h2>חתימות</h2>
+<table><tr>
+  <td style="text-align:center;width:50%;padding:12px 10px;border:1px solid #e0e0e0">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">מוסר הרכב: ${d.delivererName||'—'}</div>${s1}
+  </td>
+  <td style="text-align:center;width:50%;padding:12px 10px;border:1px solid #e0e0e0">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}
+  </td>
+</tr></table>
+<div style="margin-top:10px;font-size:10px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:6px">
+  מס' טופס: קר 1 | עודכן: 20.01.2025 | ערך: עמית שגיא | אישר: מוטי שגיא | רח' הקידמה 16, אשדוד | 08-9400967 | office@silagi.co.il
+</div>
+</body></html>`;
+
+  closePreview();
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+}
+</script>
+</body>
+</html>
