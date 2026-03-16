@@ -123,7 +123,7 @@
   <div class="section">
     <div class="section-header">📍 פרטי הגעה</div>
     <div class="section-body">
-      <div class="field-row full" style="margin-bottom:10px">
+      <div class="field-row full" style="margin-bottom:5px">
         <div class="field">
           <label>הגיע מ</label>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
@@ -143,7 +143,7 @@
           </div>
         </div>
       </div>
-      <div class="field-row full" style="margin-bottom:10px">
+      <div class="field-row full" style="margin-bottom:5px">
         <div class="field">
           <label>ע"י נציג</label>
           <div class="radio-group" style="margin-top:4px">
@@ -233,8 +233,7 @@
   </div>
 
   <div class="actions">
-    <button class="btn btn-accent" onclick="printForm()">🖨️ הדפסה / PDF</button>
-    <button class="btn btn-primary" id="emailBtn" onclick="showPreview()">📧 שליחה למייל</button>
+    <button class="btn btn-primary" id="emailBtn" onclick="openPDF()">📥 הורד PDF</button>
   </div>
 
   <div class="footer">
@@ -257,11 +256,11 @@
       <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;cursor:pointer;background:#fff;border:2px solid #c8d6e8;border-radius:8px;padding:8px 14px;flex:1">
           <input type="radio" name="emailTo" value="office@silagi.co.il" checked style="accent-color:#1a3a5c">
-          משרד – office@silagi.co.il
+          משרד – <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b646d6d62686e4b7862676a6c62256864256267">[email&#160;protected]</a>
         </label>
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;cursor:pointer;background:#fff;border:2px solid #c8d6e8;border-radius:8px;padding:8px 14px;flex:1">
           <input type="radio" name="emailTo" value="nurit@silagi.co.il" style="accent-color:#1a3a5c">
-          נורית – nurit@silagi.co.il
+          נורית – <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1cfd4d3c8d5e1d2c8cdc0c6c88fc2ce8fc8cd">[email&#160;protected]</a>
         </label>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -274,7 +273,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── EmailJS ──
 emailjs.init('pZuPSepvxlR5oV3RX');
 
@@ -410,7 +409,7 @@ function printForm() {
 </div>
 
 <h2>פרטי לקוח ורכב</h2>
-<table style="margin-bottom:10px"><tr>
+<table style="margin-bottom:5px"><tr>
   <td class="td"><b>תאריך:</b> ${dateDisplay}</td>
   <td class="td"><b>לקוח:</b> ${d.customerName||'—'}</td>
   <td class="td"><b>טלפון:</b> ${d.phone||'—'}</td>
@@ -424,7 +423,7 @@ function printForm() {
 </tr></table>
 
 <h2>ממצאי בדיקה</h2>
-<table style="margin-bottom:10px">
+<table style="margin-bottom:5px">
   ${col1.map((item,i) => {
     const c2 = col2[i];
     return `<tr>
@@ -435,7 +434,7 @@ function printForm() {
   }).join('')}
 </table>
 
-<table style="margin-bottom:10px"><tr>
+<table style="margin-bottom:5px"><tr>
   <td style="width:58%;vertical-align:top;padding-left:10px">
     <h2>מצב חיצוני</h2>
     <p style="font-size:13px;background:#f4f7fb;padding:7px 9px;border:1px solid #e0e0e0;border-radius:3px;min-height:38px">${d.externalCondition||'—'}</p>
@@ -548,12 +547,8 @@ function closePreview() {
 
 function openPDF() {
   const d = collectData();
-  const toEmail = document.querySelector('input[name="emailTo"]:checked')?.value || 'office@silagi.co.il';
   const name = d.customerName||'לקוח';
   const license = d.licenseNum||'';
-  const dateStr = d.date||new Date().toLocaleDateString('he-IL');
-  const subject = encodeURIComponent(`טופס קבלת רכב – ${name} | ${license} | ${dateStr}`);
-  const body = encodeURIComponent(`שלום,\n\nמצורף טופס קבלת רכב עבור ${name}.\nמס' רישוי: ${license}\nתאריך: ${dateStr}\n\nאנא צרף את קובץ ה-PDF ששמרת.`);
 
   const items = [
     ['גלגל רזרבי',d.spare,''],['פנסי צד וצמות',d.sideLamps,d.sideLampQty],
@@ -576,12 +571,12 @@ function openPDF() {
     const color=(v==='yes'||v==='ok')?'#27ae60':(v==='no'||v==='notok')?'#e74c3c':'#555';
     const label=v==='yes'?'יש':v==='no'?'אין':v==='ok'?'תקין':v==='notok'?'לא תקין':v||'—';
     const extra=x?` (${x})`:'';
-    return `<td style="padding:6px 9px;border:1px solid #ccc;font-size:13px;width:32%">${l}${extra}</td>
-            <td style="padding:6px 9px;border:1px solid #ccc;font-size:13px;font-weight:700;color:${color};width:18%;text-align:center">${label}</td>`;
+    return `<td style="padding:5px 8px;border:1px solid #ddd;font-size:14px;width:34%">${l}${extra}</td>
+            <td style="padding:5px 8px;border:1px solid #ddd;font-size:14px;font-weight:700;color:${color};width:16%;text-align:center">${label}</td>`;
   };
 
-  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:55px">`:'אין חתימה';
-  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:55px">`:'אין חתימה';
+  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:50px">`:'<span style="color:#bbb;font-size:12px">אין חתימה</span>';
+  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:50px">`:'<span style="color:#bbb;font-size:12px">אין חתימה</span>';
   let dateDisplay='—';
   if(d.date){const p=d.date.split('-');dateDisplay=p.length===3?`${p[2]}-${p[1]}-${p[0]}`:d.date;}
 
@@ -589,85 +584,87 @@ function openPDF() {
 <title>טופס קבלת רכב – ${name}</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;padding:10px 14px;direction:rtl;background:#fff;font-size:11px}
-  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a3a5c;padding-bottom:7px;margin-bottom:8px}
-  .badge{background:#e8a020;color:#1a3a5c;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700}
-  h2{font-size:11px;font-weight:700;color:#1a3a5c;background:#eef3f9;border-right:3px solid #e8a020;padding:3px 7px;margin:6px 0 3px}
+  body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl}
+  .page{padding:7px 12px}
+  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a3a5c;padding-bottom:5px;margin-bottom:6px}
+  .co-name{font-size:24px;font-weight:900;color:#1a3a5c}
+  .co-sub{font-size:11px;color:#888;margin-top:2px}
+  .badge{background:#e8a020;color:#1a3a5c;padding:6px 16px;border-radius:5px;font-size:14px;font-weight:700}
+  h2{font-size:13px;font-weight:700;color:#1a3a5c;background:#eef3f9;border-right:4px solid #e8a020;padding:4px 9px;margin:7px 0 4px}
   table{width:100%;border-collapse:collapse}
   td{vertical-align:middle}
-  .td{padding:3px 6px;border:1px solid #ccc;font-size:11px}
-  .bar{background:#1a3a5c;color:#fff;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;margin:-10px -14px 10px}
-  @page{margin:5mm;size:A4}
-  @media print{.bar{display:none}body{padding:0}}
+  .info-td{padding:7px 10px;border:1px solid #ddd;font-size:14px;background:#fafcff}
+  .info-label{font-size:12px;color:#888;display:block;margin-bottom:3px;font-weight:500}
+  .info-val{font-size:17px;font-weight:700;color:#1e2d3d}
+  @page{margin:4mm;size:A4}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
-</head><body>
-
-<div class="bar">
-  <span style="font-size:12px;font-weight:700">1. לחץ "שמור PDF" ← בחר "Save as PDF" ← 2. צרף למייל שנפתח</span>
-  <button onclick="window.print()" style="background:#e8a020;color:#1a3a5c;border:none;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer">🖨️ שמור PDF</button>
-</div>
+</head><body><div class="page">
 
 <div class="hdr">
-  <div><div style="font-size:17px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div><div style="font-size:10px;color:#888">יצור מרכבים למשאיות</div></div>
+  <div>
+    <div class="co-name">סילגי 2000 בע"מ</div>
+    <div class="co-sub">יצור מרכבים למשאיות</div>
+  </div>
   <div class="badge">טופס קבלת רכב</div>
 </div>
 
-<h2>פרטי לקוח ורכב</h2>
+<h2>פרטי לקוח</h2>
 <table style="margin-bottom:5px"><tr>
-  <td class="td"><b>תאריך:</b> ${dateDisplay}</td>
-  <td class="td"><b>לקוח:</b> ${d.customerName||'—'}</td>
-  <td class="td"><b>טלפון:</b> ${d.phone||'—'}</td>
+  <td class="info-td"><span class="info-label">תאריך</span><span class="info-val">${dateDisplay}</span></td>
+  <td class="info-td"><span class="info-label">שם לקוח</span><span class="info-val">${d.customerName||'—'}</span></td>
+  <td class="info-td"><span class="info-label">טלפון</span><span class="info-val">${d.phone||'—'}</span></td>
+</tr></table>
+
+<h2>פרטי הרכב</h2>
+<table style="margin-bottom:5px"><tr>
+  <td class="info-td"><span class="info-label">מספר שלדה</span><span class="info-val">${d.chassisNum||'—'}</span></td>
+  <td class="info-td"><span class="info-label">מס' רישוי</span><span class="info-val">${d.licenseNum||'—'}</span></td>
+  <td class="info-td"><span class="info-label">יצרן / דגם</span><span class="info-val">${d.manufacturer||'—'} ${d.model||''}</span></td>
 </tr><tr>
-  <td class="td"><b>שלדה:</b> ${d.chassisNum||'—'}</td>
-  <td class="td"><b>רישוי:</b> ${d.licenseNum||'—'}</td>
-  <td class="td"><b>יצרן/דגם:</b> ${d.manufacturer||'—'} ${d.model||''}</td>
-</tr><tr>
-  <td class="td" colspan="2"><b>הגיע מ:</b> ${d.arrivedFrom}${d.craneInstaller?' ('+d.craneInstaller+')':''}${d.coolingUnit?' ('+d.coolingUnit+')':''}${d.otherSource?' ('+d.otherSource+')':''} | <b>נציג:</b> ${d.rep}</td>
-  <td class="td"><b>אופן הגעה:</b> ${d.arrivalMethod}</td>
+  <td class="info-td" colspan="2"><span class="info-label">הגיע מ</span><span class="info-val">${d.arrivedFrom}${d.craneInstaller?' – '+d.craneInstaller:''}${d.coolingUnit?' – '+d.coolingUnit:''}${d.otherSource?' – '+d.otherSource:''}</span></td>
+  <td class="info-td"><span class="info-label">נציג / אופן הגעה</span><span class="info-val">${d.rep} | ${d.arrivalMethod}</span></td>
 </tr></table>
 
 <h2>ממצאי בדיקה</h2>
 <table style="margin-bottom:5px">
-  ${col1.map((item,i)=>{const c2=col2[i];return`<tr>${cell(item[0],item[1],item[2])}<td style="width:1%;border:none;padding:0 2px"></td>${c2?cell(c2[0],c2[1],c2[2]):'<td colspan="2" style="border:none"></td>'}</tr>`;}).join('')}
+  ${col1.map((item,i)=>{const c2=col2[i];return`<tr>${cell(item[0],item[1],item[2])}<td style="width:1%;border:none;padding:0 3px"></td>${c2?cell(c2[0],c2[1],c2[2]):'<td colspan="2" style="border:none"></td>'}</tr>`;}).join('')}
 </table>
 
 <table style="margin-bottom:5px"><tr>
-  <td style="width:58%;vertical-align:top;padding-left:6px">
+  <td style="width:55%;vertical-align:top;padding-left:10px">
     <h2>מצב חיצוני</h2>
-    <p style="font-size:11px;background:#f4f7fb;padding:4px 6px;border:1px solid #ccc;border-radius:3px;min-height:24px">${d.externalCondition||'—'}</p>
+    <p style="font-size:15px;background:#f4f7fb;padding:10px 12px;border:1px solid #ddd;border-radius:4px;min-height:36px">${d.externalCondition||'—'}</p>
   </td>
-  <td style="width:42%;vertical-align:top">
+  <td style="width:45%;vertical-align:top">
     <h2>לוח שעונים</h2>
-    <p style="font-size:11px"><b>סטטוס:</b> ${d.dashboard||'—'}</p>
-    ${d.dashboardFaults?`<p style="font-size:11px"><b>תקלות:</b> ${d.dashboardFaults}</p>`:''}
-    ${d.oldCarNotes?`<p style="font-size:11px"><b>הערות:</b> ${d.oldCarNotes}</p>`:''}
+    <p style="font-size:15px;padding:2px 0"><b>סטטוס:</b> ${d.dashboard||'—'}</p>
+    ${d.dashboardFaults?`<p style="font-size:13px"><b>תקלות:</b> ${d.dashboardFaults}</p>`:''}
+    ${d.oldCarNotes?`<p style="font-size:13px"><b>הערות:</b> ${d.oldCarNotes}</p>`:''}
   </td>
 </tr></table>
 
 <h2>חתימות</h2>
 <table><tr>
-  <td style="text-align:center;width:50%;padding:7px 8px;border:1px solid #ccc">
-    <div style="font-size:11px;font-weight:600;margin-bottom:4px">מוסר הרכב: ${d.delivererName||'—'}</div>${s1}
+  <td style="text-align:center;width:50%;padding:6px;border:1px solid #ddd">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">מוסר הרכב: ${d.delivererName||'—'}</div>${s1}
   </td>
-  <td style="text-align:center;width:50%;padding:7px 8px;border:1px solid #ccc">
-    <div style="font-size:11px;font-weight:600;margin-bottom:4px">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}
+  <td style="text-align:center;width:50%;padding:6px;border:1px solid #ddd">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}
   </td>
 </tr></table>
 
-<div style="margin-top:7px;font-size:9px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:5px">
-  מס' טופס: קר 1 | עודכן: 20.01.2025 | ערך: עמית שגיא | אישר: מוטי שגיא | רח' הקידמה 16, אשדוד | 08-9400967 | office@silagi.co.il
+<div style="margin-top:10px;font-size:9px;color:#bbb;text-align:center;border-top:1px solid #eee;padding-top:7px">
+  מס' טופס: קר 1 | עודכן: 20.01.2025 | ערך: עמית שגיא | אישר: מוטי שגיא | רח' הקידמה 16, א.ת. צפוני, אשדוד | 08-9400967 | office@silagi.co.il
 </div>
-</body></html>`;
 
-  closePreview();
+</div></body></html>`;
+
   const w = window.open('','_blank');
   w.document.write(html);
   w.document.close();
   w.focus();
-  // Open email after short delay
-  setTimeout(function() {
-    window.location.href = 'mailto:' + toEmail + '?subject=' + subject + '&body=' + body;
-  }, 1500);
+  setTimeout(function(){ w.print(); }, 800);
 }
 </script>
 </body>
