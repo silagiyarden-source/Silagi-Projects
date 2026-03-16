@@ -123,7 +123,7 @@
   <div class="section">
     <div class="section-header">📍 פרטי הגעה</div>
     <div class="section-body">
-      <div class="field-row full" style="margin-bottom:10px">
+      <div class="field-row full" style="margin-bottom:5px">
         <div class="field">
           <label>הגיע מ</label>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
@@ -143,7 +143,7 @@
           </div>
         </div>
       </div>
-      <div class="field-row full" style="margin-bottom:10px">
+      <div class="field-row full" style="margin-bottom:5px">
         <div class="field">
           <label>ע"י נציג</label>
           <div class="radio-group" style="margin-top:4px">
@@ -233,8 +233,7 @@
   </div>
 
   <div class="actions">
-    <button class="btn btn-accent" onclick="printForm()">🖨️ הדפסה / PDF</button>
-    <button class="btn btn-primary" id="emailBtn" onclick="showPreview()">📧 שליחה למייל</button>
+    <button class="btn btn-primary" id="emailBtn" onclick="openPDF()">📥 הורד PDF</button>
   </div>
 
   <div class="footer">
@@ -252,16 +251,29 @@
       <button onclick="closePreview()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">×</button>
     </div>
     <div id="previewBody" style="padding:16px;font-family:Heebo,sans-serif;font-size:13px;direction:rtl"></div>
-    <div style="padding:14px 16px;background:#eef3f9;display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid #c8d6e8">
-      <button onclick="closePreview()" style="padding:13px;border-radius:10px;border:none;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;background:#c8d6e8;color:#1e2d3d;cursor:pointer">✏️ חזור לעריכה</button>
-      <button id="confirmSendBtn" onclick="confirmSend()" style="padding:13px;border-radius:10px;border:none;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;background:#1a3a5c;color:#fff;cursor:pointer">📥 הורד PDF ושלח מייל</button>
+    <div style="padding:12px 16px;background:#f4f7fb;border-top:1px solid #c8d6e8">
+      <div style="font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:8px">📨 שלח אל:</div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;cursor:pointer;background:#fff;border:2px solid #c8d6e8;border-radius:8px;padding:8px 14px;flex:1">
+          <input type="radio" name="emailTo" value="office@silagi.co.il" checked style="accent-color:#1a3a5c">
+          משרד – <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b646d6d62686e4b7862676a6c62256864256267">[email&#160;protected]</a>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;cursor:pointer;background:#fff;border:2px solid #c8d6e8;border-radius:8px;padding:8px 14px;flex:1">
+          <input type="radio" name="emailTo" value="nurit@silagi.co.il" style="accent-color:#1a3a5c">
+          נורית – <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1cfd4d3c8d5e1d2c8cdc0c6c88fc2ce8fc8cd">[email&#160;protected]</a>
+        </label>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onclick="closePreview()" style="padding:13px;border-radius:10px;border:none;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;background:#c8d6e8;color:#1e2d3d;cursor:pointer">✏️ חזור לעריכה</button>
+        <button id="confirmSendBtn" onclick="openPDF()" style="padding:13px;border-radius:10px;border:none;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;background:#1a3a5c;color:#fff;cursor:pointer">📥 שמור PDF ושלח</button>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── EmailJS ──
 emailjs.init('pZuPSepvxlR5oV3RX');
 
@@ -397,7 +409,7 @@ function printForm() {
 </div>
 
 <h2>פרטי לקוח ורכב</h2>
-<table style="margin-bottom:10px"><tr>
+<table style="margin-bottom:5px"><tr>
   <td class="td"><b>תאריך:</b> ${dateDisplay}</td>
   <td class="td"><b>לקוח:</b> ${d.customerName||'—'}</td>
   <td class="td"><b>טלפון:</b> ${d.phone||'—'}</td>
@@ -411,7 +423,7 @@ function printForm() {
 </tr></table>
 
 <h2>ממצאי בדיקה</h2>
-<table style="margin-bottom:10px">
+<table style="margin-bottom:5px">
   ${col1.map((item,i) => {
     const c2 = col2[i];
     return `<tr>
@@ -422,7 +434,7 @@ function printForm() {
   }).join('')}
 </table>
 
-<table style="margin-bottom:10px"><tr>
+<table style="margin-bottom:5px"><tr>
   <td style="width:58%;vertical-align:top;padding-left:10px">
     <h2>מצב חיצוני</h2>
     <p style="font-size:13px;background:#f4f7fb;padding:7px 9px;border:1px solid #e0e0e0;border-radius:3px;min-height:38px">${d.externalCondition||'—'}</p>
@@ -533,42 +545,130 @@ function closePreview() {
   document.body.style.overflow = '';
 }
 
-async function confirmSend() {
-  const btn = document.getElementById('confirmSendBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ מכין PDF…';
-
+function openPDF() {
   const d = collectData();
-  const name    = d.customerName || 'לקוח';
-  const license = d.licenseNum   || '';
-  const dateStr = d.date         || new Date().toLocaleDateString('he-IL');
-  const filename = `טופס_קבלת_רכב_${name}_${license}.pdf`.replace(/\s+/g,'_');
+  const name = d.customerName||'לקוח';
+  const license = d.licenseNum||'';
 
-  try {
-    // Generate and download PDF
-    const previewEl = document.getElementById('previewBody');
-    await html2pdf().set({
-      margin: 8,
-      filename: filename,
-      image: { type: 'jpeg', quality: 0.92 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).from(previewEl).save();
+  const items = [
+    ['גלגל רזרבי',d.spare,''],['פנסי צד וצמות',d.sideLamps,d.sideLampQty],
+    ['מתקן לגלגל',d.wheelHolder,''],['וו גרירה',d.hook,d.hookState],
+    ['פגוש אחורי',d.rearBumper,''],['ברזי אויר לנ"ל',d.airTaps,''],
+    ['סדי עצירה',d.brakes,d.brakesQty],['תושבות רתום',d.hitchBracket,d.hitchBracketNote],
+    ['מטף',d.extinguisher,d.extQty],['מפתחות',d.keys,d.keysQty],
+    ['עזרה ראשונה',d.firstAid,''],['שלט',d.sign,d.signQty],
+    ["מגבה (ג'ק)",d.jack,''],['כבל ABS',d.abs,''],
+    ['מפתח גלגלים',d.wheelKey,''],['משולש',d.triangle,''],
+    ['ידיות',d.handles,''],['אפוד זוהר',d.vest,''],
+    ['מכסה מצבר',d.battCover,''],['שלט למנוף',d.craneRemote,''],
+    ['מכסה דלק',d.fuelCap,''],['פנסים אחוריים',d.rearLights,''],
+    ['מכסה אוריאה',d.ureaCap,''],['קוטבי מצברים',d.battTerminals,''],
+  ];
+  const half = Math.ceil(items.length/2);
+  const col1 = items.slice(0,half), col2 = items.slice(half);
 
-    showToast('✅ PDF הורד! פותח מייל…');
-    btn.textContent = '✅ נשלח!';
+  const cell = (l,v,x) => {
+    const color=(v==='yes'||v==='ok')?'#27ae60':(v==='no'||v==='notok')?'#e74c3c':'#555';
+    const label=v==='yes'?'יש':v==='no'?'אין':v==='ok'?'תקין':v==='notok'?'לא תקין':v||'—';
+    const extra=x?` (${x})`:'';
+    return `<td style="padding:5px 8px;border:1px solid #ddd;font-size:14px;width:34%">${l}${extra}</td>
+            <td style="padding:5px 8px;border:1px solid #ddd;font-size:14px;font-weight:700;color:${color};width:16%;text-align:center">${label}</td>`;
+  };
 
-    // Open mailto after short delay
-    setTimeout(() => {
-      const subject = encodeURIComponent(`טופס קבלת רכב – ${name} | ${license} | ${dateStr}`);
-      const body    = encodeURIComponent(`שלום,\n\nמצורף טופס קבלת רכב עבור ${name}.\nמס' רישוי: ${license}\nתאריך: ${dateStr}\n\nאנא ראה קובץ PDF מצורף.`);
-      window.location.href = `mailto:office@silagi.co.il?subject=${subject}&body=${body}`;
-      closePreview();
-    }, 1500);
+  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:50px">`:'<span style="color:#bbb;font-size:12px">אין חתימה</span>';
+  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:50px">`:'<span style="color:#bbb;font-size:12px">אין חתימה</span>';
+  let dateDisplay='—';
+  if(d.date){const p=d.date.split('-');dateDisplay=p.length===3?`${p[2]}-${p[1]}-${p[0]}`:d.date;}
 
-  } catch(err) {
-    console.error(err);
-    showToast('❌ שגיאה ביצירת PDF');
+  const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8">
+<title>טופס קבלת רכב – ${name}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl}
+  .page{padding:7px 12px}
+  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a3a5c;padding-bottom:5px;margin-bottom:6px}
+  .co-name{font-size:24px;font-weight:900;color:#1a3a5c}
+  .co-sub{font-size:11px;color:#888;margin-top:2px}
+  .badge{background:#e8a020;color:#1a3a5c;padding:6px 16px;border-radius:5px;font-size:14px;font-weight:700}
+  h2{font-size:13px;font-weight:700;color:#1a3a5c;background:#eef3f9;border-right:4px solid #e8a020;padding:4px 9px;margin:7px 0 4px}
+  table{width:100%;border-collapse:collapse}
+  td{vertical-align:middle}
+  .info-td{padding:7px 10px;border:1px solid #ddd;font-size:14px;background:#fafcff}
+  .info-label{font-size:12px;color:#888;display:block;margin-bottom:3px;font-weight:500}
+  .info-val{font-size:17px;font-weight:700;color:#1e2d3d}
+  @page{margin:4mm;size:A4}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head><body><div class="page">
+
+<div class="hdr">
+  <div>
+    <div class="co-name">סילגי 2000 בע"מ</div>
+    <div class="co-sub">יצור מרכבים למשאיות</div>
+  </div>
+  <div class="badge">טופס קבלת רכב</div>
+</div>
+
+<h2>פרטי לקוח</h2>
+<table style="margin-bottom:5px"><tr>
+  <td class="info-td"><span class="info-label">תאריך</span><span class="info-val">${dateDisplay}</span></td>
+  <td class="info-td"><span class="info-label">שם לקוח</span><span class="info-val">${d.customerName||'—'}</span></td>
+  <td class="info-td"><span class="info-label">טלפון</span><span class="info-val">${d.phone||'—'}</span></td>
+</tr></table>
+
+<h2>פרטי הרכב</h2>
+<table style="margin-bottom:5px"><tr>
+  <td class="info-td"><span class="info-label">מספר שלדה</span><span class="info-val">${d.chassisNum||'—'}</span></td>
+  <td class="info-td"><span class="info-label">מס' רישוי</span><span class="info-val">${d.licenseNum||'—'}</span></td>
+  <td class="info-td"><span class="info-label">יצרן / דגם</span><span class="info-val">${d.manufacturer||'—'} ${d.model||''}</span></td>
+</tr><tr>
+  <td class="info-td" colspan="2"><span class="info-label">הגיע מ</span><span class="info-val">${d.arrivedFrom}${d.craneInstaller?' – '+d.craneInstaller:''}${d.coolingUnit?' – '+d.coolingUnit:''}${d.otherSource?' – '+d.otherSource:''}</span></td>
+  <td class="info-td"><span class="info-label">נציג / אופן הגעה</span><span class="info-val">${d.rep} | ${d.arrivalMethod}</span></td>
+</tr></table>
+
+<h2>ממצאי בדיקה</h2>
+<table style="margin-bottom:5px">
+  ${col1.map((item,i)=>{const c2=col2[i];return`<tr>${cell(item[0],item[1],item[2])}<td style="width:1%;border:none;padding:0 3px"></td>${c2?cell(c2[0],c2[1],c2[2]):'<td colspan="2" style="border:none"></td>'}</tr>`;}).join('')}
+</table>
+
+<table style="margin-bottom:5px"><tr>
+  <td style="width:55%;vertical-align:top;padding-left:10px">
+    <h2>מצב חיצוני</h2>
+    <p style="font-size:15px;background:#f4f7fb;padding:10px 12px;border:1px solid #ddd;border-radius:4px;min-height:36px">${d.externalCondition||'—'}</p>
+  </td>
+  <td style="width:45%;vertical-align:top">
+    <h2>לוח שעונים</h2>
+    <p style="font-size:15px;padding:2px 0"><b>סטטוס:</b> ${d.dashboard||'—'}</p>
+    ${d.dashboardFaults?`<p style="font-size:13px"><b>תקלות:</b> ${d.dashboardFaults}</p>`:''}
+    ${d.oldCarNotes?`<p style="font-size:13px"><b>הערות:</b> ${d.oldCarNotes}</p>`:''}
+  </td>
+</tr></table>
+
+<h2>חתימות</h2>
+<table><tr>
+  <td style="text-align:center;width:50%;padding:6px;border:1px solid #ddd">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">מוסר הרכב: ${d.delivererName||'—'}</div>${s1}
+  </td>
+  <td style="text-align:center;width:50%;padding:6px;border:1px solid #ddd">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}
+  </td>
+</tr></table>
+
+<div style="margin-top:10px;font-size:9px;color:#bbb;text-align:center;border-top:1px solid #eee;padding-top:7px">
+  מס' טופס: קר 1 | עודכן: 20.01.2025 | ערך: עמית שגיא | אישר: מוטי שגיא | רח' הקידמה 16, א.ת. צפוני, אשדוד | 08-9400967 | office@silagi.co.il
+</div>
+
+</div></body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(function(){ w.print(); }, 800);
+}
+</script>
+</body>
+</html>
     btn.disabled = false;
     btn.textContent = '✅ אשר ושלח';
   }
