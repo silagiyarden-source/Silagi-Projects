@@ -123,7 +123,7 @@
   <div class="section">
     <div class="section-header">📍 פרטי הגעה</div>
     <div class="section-body">
-      <div class="field-row full" style="margin-bottom:5px">
+      <div class="field-row full" style="margin-bottom:3px">
         <div class="field">
           <label>הגיע מ</label>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
@@ -143,7 +143,7 @@
           </div>
         </div>
       </div>
-      <div class="field-row full" style="margin-bottom:5px">
+      <div class="field-row full" style="margin-bottom:3px">
         <div class="field">
           <label>ע"י נציג</label>
           <div class="radio-group" style="margin-top:4px">
@@ -409,7 +409,7 @@ function printForm() {
 </div>
 
 <h2>פרטי לקוח ורכב</h2>
-<table style="margin-bottom:5px"><tr>
+<table style="margin-bottom:3px"><tr>
   <td class="td"><b>תאריך:</b> ${dateDisplay}</td>
   <td class="td"><b>לקוח:</b> ${d.customerName||'—'}</td>
   <td class="td"><b>טלפון:</b> ${d.phone||'—'}</td>
@@ -423,7 +423,7 @@ function printForm() {
 </tr></table>
 
 <h2>ממצאי בדיקה</h2>
-<table style="margin-bottom:5px">
+<table style="margin-bottom:3px">
   ${col1.map((item,i) => {
     const c2 = col2[i];
     return `<tr>
@@ -434,7 +434,7 @@ function printForm() {
   }).join('')}
 </table>
 
-<table style="margin-bottom:5px"><tr>
+<table style="margin-bottom:3px"><tr>
   <td style="width:58%;vertical-align:top;padding-left:10px">
     <h2>מצב חיצוני</h2>
     <p style="font-size:13px;background:#f4f7fb;padding:7px 9px;border:1px solid #e0e0e0;border-radius:3px;min-height:38px">${d.externalCondition||'—'}</p>
@@ -480,8 +480,8 @@ function buildPreviewHTML(d) {
       <td style="padding:5px 8px;border:1px solid #ddd;font-size:12px;font-weight:600;color:${color}">${label}${x?' <span style="color:#555;font-weight:400">| '+x+'</span>':''}</td>
     </tr>`;
   };
-  const s1 = sigData.sig1 ? `<img src="${sigData.sig1}" style="max-height:50px">` : '<span style="color:#999">אין חתימה</span>';
-  const s2 = sigData.sig2 ? `<img src="${sigData.sig2}" style="max-height:50px">` : '<span style="color:#999">אין חתימה</span>';
+  const s1 = sigData.sig1 ? `<img src="${sigData.sig1}" style="max-height:45px">` : '<span style="color:#999">אין חתימה</span>';
+  const s2 = sigData.sig2 ? `<img src="${sigData.sig2}" style="max-height:45px">` : '<span style="color:#999">אין חתימה</span>';
 
   return `
     <div style="border-bottom:2px solid #e8a020;padding-bottom:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
@@ -571,12 +571,12 @@ function openPDF() {
     const color=(v==='yes'||v==='ok')?'#27ae60':(v==='no'||v==='notok')?'#e74c3c':'#555';
     const label=v==='yes'?'יש':v==='no'?'אין':v==='ok'?'תקין':v==='notok'?'לא תקין':v||'—';
     const extra=x?` (${x})`:'';
-    return `<td style="padding:5px 8px;border:1px solid #ddd;font-size:14px;width:34%">${l}${extra}</td>
-            <td style="padding:5px 8px;border:1px solid #ddd;font-size:14px;font-weight:700;color:${color};width:16%;text-align:center">${label}</td>`;
+    return `<td style="padding:4px 6px;border:1px solid #ddd;font-size:13px;width:34%">${l}${extra}</td>
+            <td style="padding:4px 6px;border:1px solid #ddd;font-size:13px;font-weight:700;color:${color};width:16%;text-align:center">${label}</td>`;
   };
 
-  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:50px">`:'<span style="color:#bbb;font-size:12px">אין חתימה</span>';
-  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:50px">`:'<span style="color:#bbb;font-size:12px">אין חתימה</span>';
+  const s1 = sigData.sig1?`<img src="${sigData.sig1}" style="max-height:45px">`:'<span style="color:#bbb;font-size:12px">אין חתימה</span>';
+  const s2 = sigData.sig2?`<img src="${sigData.sig2}" style="max-height:45px">`:'<span style="color:#bbb;font-size:12px">אין חתימה</span>';
   let dateDisplay='—';
   if(d.date){const p=d.date.split('-');dateDisplay=p.length===3?`${p[2]}-${p[1]}-${p[0]}`:d.date;}
 
@@ -585,20 +585,20 @@ function openPDF() {
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl}
-  .page{padding:7px 12px}
-  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a3a5c;padding-bottom:5px;margin-bottom:6px}
-  .co-name{font-size:24px;font-weight:900;color:#1a3a5c}
+  .page{padding:5px 10px}
+  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a3a5c;padding-bottom:4px;margin-bottom:5px}
+  .co-name{font-size:20px;font-weight:900;color:#1a3a5c}
   .co-sub{font-size:11px;color:#888;margin-top:2px}
-  .badge{background:#e8a020;color:#1a3a5c;padding:6px 16px;border-radius:5px;font-size:14px;font-weight:700}
-  h2{font-size:13px;font-weight:700;color:#1a3a5c;background:#eef3f9;border-right:4px solid #e8a020;padding:4px 9px;margin:7px 0 4px}
+  .badge{background:#e8a020;color:#1a3a5c;padding:4px 12px;border-radius:5px;font-size:14px;font-weight:700}
+  h2{font-size:13px;font-weight:700;color:#1a3a5c;background:#eef3f9;border-right:4px solid #e8a020;padding:3px 8px;margin:5px 0 3px}
   table{width:100%;border-collapse:collapse}
   td{vertical-align:middle}
-  .info-td{padding:7px 10px;border:1px solid #ddd;font-size:14px;background:#fafcff}
-  .info-label{font-size:12px;color:#888;display:block;margin-bottom:3px;font-weight:500}
-  .info-val{font-size:17px;font-weight:700;color:#1e2d3d}
-  @page{margin:4mm;size:A4}
+  .info-td{padding:5px 8px;border:1px solid #ddd;font-size:14px;background:#fafcff}
+  .info-label{font-size:10px;color:#888;display:block;margin-bottom:1px;font-weight:500}
+  .info-val{font-size:14px;font-weight:700;color:#1e2d3d}
+  @page{margin:3mm;size:A4}
   @media print{
-    body{-webkit-print-color-adjust:exact;print-color-adjust:exact;zoom:0.93}
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
 </style>
 </head><body><div class="page">
@@ -612,14 +612,14 @@ function openPDF() {
 </div>
 
 <h2>פרטי לקוח</h2>
-<table style="margin-bottom:5px"><tr>
+<table style="margin-bottom:3px"><tr>
   <td class="info-td"><span class="info-label">תאריך</span><span class="info-val">${dateDisplay}</span></td>
   <td class="info-td"><span class="info-label">שם לקוח</span><span class="info-val">${d.customerName||'—'}</span></td>
   <td class="info-td"><span class="info-label">טלפון</span><span class="info-val">${d.phone||'—'}</span></td>
 </tr></table>
 
 <h2>פרטי הרכב</h2>
-<table style="margin-bottom:5px"><tr>
+<table style="margin-bottom:3px"><tr>
   <td class="info-td"><span class="info-label">מספר שלדה</span><span class="info-val">${d.chassisNum||'—'}</span></td>
   <td class="info-td"><span class="info-label">מס' רישוי</span><span class="info-val">${d.licenseNum||'—'}</span></td>
   <td class="info-td"><span class="info-label">יצרן / דגם</span><span class="info-val">${d.manufacturer||'—'} ${d.model||''}</span></td>
@@ -629,11 +629,11 @@ function openPDF() {
 </tr></table>
 
 <h2>ממצאי בדיקה</h2>
-<table style="margin-bottom:5px">
+<table style="margin-bottom:3px">
   ${col1.map((item,i)=>{const c2=col2[i];return`<tr>${cell(item[0],item[1],item[2])}<td style="width:1%;border:none;padding:0 3px"></td>${c2?cell(c2[0],c2[1],c2[2]):'<td colspan="2" style="border:none"></td>'}</tr>`;}).join('')}
 </table>
 
-<table style="margin-bottom:5px"><tr>
+<table style="margin-bottom:3px"><tr>
   <td style="width:55%;vertical-align:top;padding-left:10px">
     <h2>מצב חיצוני</h2>
     <p style="font-size:15px;background:#f4f7fb;padding:10px 12px;border:1px solid #ddd;border-radius:4px;min-height:36px">${d.externalCondition||'—'}</p>
@@ -648,10 +648,10 @@ function openPDF() {
 
 <h2>חתימות</h2>
 <table><tr>
-  <td style="text-align:center;width:50%;padding:6px;border:1px solid #ddd">
+  <td style="text-align:center;width:50%;padding:5px;border:1px solid #ddd">
     <div style="font-size:13px;font-weight:600;margin-bottom:8px">מוסר הרכב: ${d.delivererName||'—'}</div>${s1}
   </td>
-  <td style="text-align:center;width:50%;padding:6px;border:1px solid #ddd">
+  <td style="text-align:center;width:50%;padding:5px;border:1px solid #ddd">
     <div style="font-size:13px;font-weight:600;margin-bottom:8px">נציג סילגי: ${d.silagyRep||'—'}</div>${s2}
   </td>
 </tr></table>
