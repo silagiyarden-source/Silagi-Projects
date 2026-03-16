@@ -597,7 +597,9 @@ function openPDF() {
   .info-label{font-size:12px;color:#888;display:block;margin-bottom:3px;font-weight:500}
   .info-val{font-size:17px;font-weight:700;color:#1e2d3d}
   @page{margin:4mm;size:A4}
-  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  @media print{
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact;zoom:0.93}
+  }
 </style>
 </head><body><div class="page">
 
@@ -665,19 +667,6 @@ function openPDF() {
   w.document.close();
   w.focus();
   setTimeout(function(){ w.print(); }, 800);
-}
-</script>
-</body>
-</html>
-    btn.disabled = false;
-    btn.textContent = '✅ אשר ושלח';
-  }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 4000);
 }
 </script>
 </body>
