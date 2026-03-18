@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>סילגי 2000 – קבלת רכבים לתיקון</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #1a3a5c;
+  --primary-light: #234d7a;
+  --accent: #e8a020;
+  --accent-dark: #c8880e;
+  --success: #27ae60;
+  --danger: #e74c3c;
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --border: #dde4ed;
+  --text: #1e2d3d;
+  --text-muted: #7a8fa6;
+  --shadow: 0 2px 12px rgba(26,58,92,0.10);
+  --shadow-lg: 0 8px 32px rgba(26,58,92,0.15);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); direction: rtl; min-height: 100vh; }
+
+/* ── HEADER ── */
+.header {
+  background: var(--primary);
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.header-logo { color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.header-logo span { color: var(--accent); }
+.header-nav { display: flex; gap: 4px; }
+.nav-btn {
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 500;
+  transition: all 0.2s;
+}
+.nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.12); color: #fff; }
+.nav-btn.active { color: var(--accent); }
+
+/* ── VIEWS ── */
+.view { display: none; padding: 24px; max-width: 1100px; margin: 0 auto; }
+.view.active { display: block; }
+
+/* ── PAGE TITLE ── */
+.page-title { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.page-title::after { content:''; flex:1; height:2px; background: linear-gradient(to left, transparent, var(--border)); }
+
+/* ── CARDS ── */
+.card { background: var(--card); border-radius: 14px; box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
+.card-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
+
+/* ── FORM ── */
+.field-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.field input, .field textarea, .field select {
+  border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 9px 12px;
+  font-family: 'Heebo', sans-serif; font-size: 14px; color: var(--text);
+  background: #f8fafc; transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,58,92,0.08);
+  background: #fff;
+}
+.field textarea { resize: vertical; min-height: 70px; }
+.field.full { grid-column: 1/-1; }
+
+/* ── PARTS SELECTOR ── */
+.parts-search-wrap { position: relative; margin-bottom: 12px; }
+.parts-search-wrap input { width: 100%; padding: 11px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Heebo',sans-serif; font-size: 15px; background: #f8fafc; outline: none; transition: all 0.2s; }
+.parts-search-wrap input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(26,58,92,0.08); }
+.parts-dropdown {
+  position: absolute; top: 100%; right: 0; left: 0; z-index: 50;
+  background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+  box-shadow: var(--shadow-lg); max-height: 220px; overflow-y: auto;
+  display: none;
+}
+.parts-dropdown.open { display: block; }
+.part-option {
+  padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid #f0f4f8; font-size: 14px; transition: background 0.15s;
+}
+.part-option:last-child { border-bottom: none; }
+.part-option:hover { background: #eef3f9; }
+.part-option .part-price { color: var(--accent-dark); font-weight: 700; font-size: 13px; }
+
+/* ── PARTS TABLE ── */
+.parts-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.parts-table th { background: #eef3f9; padding: 9px 12px; text-align: right; font-weight: 700; font-size: 12px; color: var(--primary); border-bottom: 2px solid var(--border); }
+.parts-table td { padding: 9px 12px; border-bottom: 1px solid #f0f4f8; vertical-align: middle; }
+.parts-table tr:last-child td { border-bottom: none; }
+.parts-table tr:hover td { background: #f8fafc; }
+.qty-input { width: 60px; border: 1.5px solid var(--border); border-radius: 6px; padding: 5px 8px; font-family: 'Heebo',sans-serif; font-size: 14px; text-align: center; outline: none; }
+.qty-input:focus { border-color: var(--primary); }
+.btn-remove { background: none; border: none; cursor: pointer; color: var(--danger); font-size: 18px; padding: 2px 6px; border-radius: 6px; transition: background 0.2s; }
+.btn-remove:hover { background: #fde8e8; }
+
+/* ── TOTAL ── */
+.total-bar {
+  background: var(--primary); color: #fff; border-radius: 12px;
+  padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+  margin-top: 8px;
+}
+.total-bar .total-label { font-size: 15px; font-weight: 600; opacity: 0.85; }
+.total-bar .total-amount { font-size: 26px; font-weight: 900; }
+.total-bar .total-amount span { font-size: 14px; font-weight: 400; opacity: 0.7; margin-right: 4px; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-family: 'Heebo',sans-serif; font-size: 14px; font-weight: 700; transition: all 0.2s; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn-accent { background: var(--accent); color: var(--primary); }
+.btn-accent:hover { background: var(--accent-dark); transform: translateY(-1px); }
+.btn-outline { background: none; border: 1.5px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: #eef3f9; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+.actions-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+/* ── ORDERS LIST ── */
+.orders-grid { display: grid; gap: 12px; }
+.order-card {
+  background: var(--card); border-radius: 12px; box-shadow: var(--shadow);
+  padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
+}
+.order-card:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+.order-info { display: flex; flex-direction: column; gap: 4px; }
+.order-num { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+.order-name { font-size: 17px; font-weight: 800; color: var(--primary); }
+.order-details { font-size: 13px; color: var(--text-muted); }
+.order-meta { text-align: left; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.order-total { font-size: 20px; font-weight: 900; color: var(--accent-dark); }
+.order-date { font-size: 12px; color: var(--text-muted); }
+.status-badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.status-open { background: #e8f5e9; color: #27ae60; }
+.status-done { background: #eef3f9; color: var(--primary); }
+
+/* ── PARTS CATALOG ── */
+.catalog-search { width: 100%; padding: 11px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Heebo',sans-serif; font-size: 15px; background: #fff; outline: none; margin-bottom: 14px; }
+.catalog-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.catalog-table th { background: var(--primary); color: #fff; padding: 10px 14px; text-align: right; font-weight: 700; font-size: 13px; }
+.catalog-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.catalog-table tr:hover td { background: #eef3f9; }
+.price-tag { font-weight: 700; color: var(--accent-dark); }
+.edit-inline { width: 100%; border: none; background: transparent; font-family: 'Heebo',sans-serif; font-size: 14px; color: var(--text); padding: 2px 4px; border-radius: 4px; }
+.edit-inline:focus { outline: 1.5px solid var(--primary); background: #fff; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 15px; }
+
+/* ── MODAL ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; padding: 20px; overflow-y: auto; }
+.modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+.modal { background: #fff; border-radius: 16px; width: 100%; max-width: 600px; box-shadow: var(--shadow-lg); overflow: hidden; margin: auto; }
+.modal-header { background: var(--primary); color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-size: 16px; font-weight: 700; }
+.modal-close { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; line-height: 1; }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ── STATS BAR ── */
+.stats-bar { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 4px; }
+.stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.stat-value { font-size: 24px; font-weight: 900; color: var(--primary); }
+.stat-value.accent { color: var(--accent-dark); }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--primary); color: #fff; padding: 12px 24px; border-radius: 50px; font-size: 14px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">סילגי <span>2000</span> | קבלת רכבים לתיקון</div>
+  <div class="header-nav">
+    <button class="nav-btn active" onclick="showView('orders')">📋 הזמנות</button>
+    <button class="nav-btn" onclick="newOrder()">➕ חדשה</button>
+    <button class="nav-btn" onclick="showView('catalog')">🔩 מחירון</button>
+    <button class="nav-btn" onclick="openVatModal()">⚙️ הגדרות</button>
+  </div>
+</div>
+
+<!-- ═══ ORDERS LIST ═══ -->
+<div class="view active" id="view-orders">
+  <div class="page-title">📋 הזמנות תיקון</div>
+  <div class="stats-bar" id="statsBar"></div>
+  <div style="margin-bottom:14px">
+    <input type="text" id="ordersSearch" placeholder="🔍 חפש לפי שם לקוח, רישוי או דגם..." oninput="renderOrders()" style="width:100%;padding:11px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'Heebo',sans-serif;font-size:15px;background:#fff;outline:none">
+  </div>
+  <div class="orders-grid" id="ordersList"></div>
+</div>
+
+<!-- ═══ NEW / EDIT ORDER ═══ -->
+<div class="view" id="view-new-order">
+  <div class="page-title" id="formTitle">➕ הזמנת תיקון חדשה</div>
+
+  <div class="card">
+    <div class="card-title">👤 פרטי לקוח ורכב</div>
+    <div class="field-grid">
+      <div class="field"><label>שם לקוח *</label><input id="f-name" type="text" placeholder="שם מלא"></div>
+      <div class="field"><label>טלפון</label><input id="f-phone" type="tel" placeholder="05X-XXXXXXX"></div>
+      <div class="field"><label>מס' רישוי</label><input id="f-license" type="text" placeholder="XX-XXX-XX"></div>
+      <div class="field"><label>מספר שלדה</label><input id="f-chassis" type="text" placeholder="VIN"></div>
+      <div class="field"><label>יצרן / דגם</label><input id="f-model" type="text" placeholder="Mercedes, Volvo..."></div>
+      <div class="field"><label>תאריך קבלה</label><input id="f-date" type="date"></div>
+      <div class="field full"><label>תיאור העבודה / הערות</label><textarea id="f-notes" placeholder="פרט את העבודה הנדרשת..."></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔩 חלקים ועבודות</div>
+    <div class="parts-search-wrap">
+      <input type="text" id="partsSearch" placeholder="🔍 חפש חלק לפי שם..." autocomplete="off" oninput="searchParts(this.value)" onblur="setTimeout(()=>closeDropdown(),200)">
+      <div class="parts-dropdown" id="partsDropdown"></div>
+    </div>
+    <div id="partsContainer">
+      <table class="parts-table" id="partsTable" style="display:none">
+        <thead><tr>
+          <th>שם חלק</th>
+          <th style="width:90px">מחיר יח'</th>
+          <th style="width:70px">כמות</th>
+          <th style="width:90px">סה"כ</th>
+          <th style="width:40px"></th>
+        </tr></thead>
+        <tbody id="partsList"></tbody>
+      </table>
+      <div class="empty-state" id="partsEmpty">
+        <div class="icon">🔩</div>
+        <p>חפש וצרף חלקים לעבודה</p>
+      </div>
+    </div>
+    <div class="total-bar" id="totalBar" style="display:none">
+      <div class="total-label">סה"כ לתשלום (לפני מע"מ)</div>
+      <div class="total-amount"><span>₪</span><span id="totalAmount">0</span></div>
+    </div>
+  </div>
+
+  <div class="actions-bar">
+    <button class="btn btn-primary" onclick="saveOrder()">💾 שמור הזמנה</button>
+    <button class="btn btn-accent" onclick="generateQuote()">📄 הצעת מחיר PDF</button>
+    <button class="btn btn-outline" id="completeBtn" style="display:none" onclick="toggleOrderStatus()">✅ סמן כהושלמה</button>
+    <button class="btn btn-outline" onclick="showView('orders')">✖ ביטול</button>
+    <button class="btn btn-danger btn-sm" id="deleteBtn" style="display:none; margin-right:auto" onclick="deleteCurrentOrder()">🗑 מחק</button>
+  </div>
+</div>
+
+<!-- ═══ PARTS CATALOG ═══ -->
+<div class="view" id="view-catalog">
+  <div class="page-title">🔩 מחירון חלקים</div>
+  <div class="card">
+    <div class="card-title">ניהול חלקים – לחץ על שדה לעריכה</div>
+    <input class="catalog-search" id="catalogSearch" type="text" placeholder="🔍 חפש חלק..." oninput="renderCatalog(this.value)">
+    <div style="overflow-x:auto">
+      <table class="catalog-table">
+        <thead><tr>
+          <th>שם חלק</th>
+          <th style="width:90px">עלות שלנו ₪</th>
+          <th style="width:80px">מקדם ×</th>
+          <th style="width:100px">מינימום ₪</th>
+          <th style="width:110px">מחיר ללקוח ₪</th>
+          <th>הערות</th>
+          <th style="width:70px">היסטוריה</th>
+          <th style="width:50px"></th>
+        </tr></thead>
+        <tbody id="catalogBody"></tbody>
+      </table>
+    </div>
+    <div class="actions-bar">
+      <button class="btn btn-primary" onclick="addNewPart()">➕ הוסף חלק</button>
+      <button class="btn btn-outline" onclick="exportToExcel()">📊 ייצא לאקסל</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VAT SETTINGS MODAL ═══ -->
+<div class="modal-overlay" id="vatModal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <h3>⚙️ הגדרות מערכת</h3>
+      <button class="modal-close" onclick="document.getElementById('vatModal').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>שיעור מע"מ (%)</label>
+        <input id="vatInput" type="number" min="0" max="100" step="0.1" style="font-size:22px;font-weight:700;text-align:center">
+        <small style="color:var(--text-muted);font-size:12px;margin-top:4px">המע"מ הנוכחי בישראל הוא 18%</small>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('vatModal').classList.remove('open')">ביטול</button>
+      <button class="btn btn-primary" onclick="saveVat()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRICE HISTORY MODAL ═══ -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <h3>📈 היסטוריית מחירים</h3>
+      <button class="modal-close" onclick="document.getElementById('historyModal').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-body" id="historyBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('historyModal').classList.remove('open')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ QUOTE MODAL (print) ═══ -->
+<div class="modal-overlay" id="quoteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📄 הצעת מחיר מוכנה</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding: 30px 20px">
+      <div style="font-size:48px; margin-bottom:12px">✅</div>
+      <p style="font-size:16px; font-weight:600; margin-bottom:8px">הצעת המחיר מוכנה!</p>
+      <p style="color:var(--text-muted); font-size:14px">לחץ "הדפס / שמור PDF" כדי להוריד</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">סגור</button>
+      <button class="btn btn-accent" onclick="printQuote()">🖨️ הדפס / שמור PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+const PARTS_KEY = 'silagi_parts';
+const ORDERS_KEY = 'silagi_orders';
+const VAT_KEY = 'silagi_vat';
+const PRICE_HISTORY_KEY = 'silagi_price_history';
+
+const DEFAULT_PARTS = [
+  {id:1, name:"א.כ פח מידות 600-1000 מ''מ", cost:null, minPrice:1600, multiplier:null, price:1600, notes:"ללא התקנה וצבע"},
+  {id:2, name:"סלסלה פח 600-1250 מ''מ", cost:null, minPrice:1350, multiplier:null, price:1350, notes:"ללא התקנה וצבע"},
+  {id:3, name:"א.כ מעל 1000-1500 מ''מ", cost:null, minPrice:2200, multiplier:null, price:2200, notes:"ללא התקנה וצבע"},
+  {id:4, name:"תוספת מכסה לסלסלה", cost:null, minPrice:1300, multiplier:null, price:1300, notes:"ללא התקנה וצבע"},
+  {id:5, name:"סלסלה מעל 1250-2500 מ''מ", cost:null, minPrice:1750, multiplier:null, price:1750, notes:"ללא התקנה וצבע"},
+  {id:6, name:"תוספת לא.כ נגד מים", cost:null, minPrice:350, multiplier:null, price:350, notes:"ללא התקנה וצבע"},
+  {id:7, name:"צבע א.כ/סלסלה", cost:null, minPrice:250, multiplier:null, price:250, notes:"ללא התקנה וצבע"},
+  {id:8, name:"א.כ מעל 1500 מ''מ (בהתאמה אישית)", cost:null, minPrice:3300, multiplier:null, price:3300, notes:"ללא התקנה וצבע"},
+  {id:9, name:"סל עמודים", cost:null, minPrice:700, multiplier:null, price:700, notes:"ללא התקנה וצבע"},
+  {id:10, name:"צבע לסל עמודים", cost:null, minPrice:130, multiplier:null, price:130, notes:"ללא התקנה וצבע"},
+  {id:11, name:"דלץ עץ", cost:null, minPrice:2600, multiplier:null, price:2600, notes:"ללא התקנה וצבע"},
+  {id:12, name:"צבע לדלת עץ", cost:null, minPrice:200, multiplier:null, price:200, notes:"ללא התקנה וצבע"},
+  {id:13, name:"דלת פח", cost:null, minPrice:1850, multiplier:null, price:1850, notes:"ללא התקנה וצבע"},
+  {id:14, name:"אופציה לדלת מחוזקת", cost:null, minPrice:600, multiplier:null, price:600, notes:"ללא התקנה וצבע"},
+  {id:15, name:"צבע לדלת פח", cost:null, minPrice:200, multiplier:null, price:200, notes:"ללא התקנה וצבע"},
+  {id:16, name:"רצ'ר ימין/שמאל", cost:160, minPrice:450, multiplier:2.8125, price:450, notes:"ללא התקנה וצבע"},
+  {id:17, name:"סוף וילון אלומיניום", cost:null, minPrice:250, multiplier:null, price:250, notes:"ללא התקנה וצבע"},
+  {id:18, name:"סוף וילון אלומיניום + התקנה", cost:null, minPrice:530, multiplier:null, price:530, notes:""},
+  {id:19, name:"צינור לוילון", cost:null, minPrice:150, multiplier:null, price:150, notes:""},
+  {id:20, name:"צינור לוילון + התקנה", cost:null, minPrice:480, multiplier:null, price:480, notes:""},
+  {id:21, name:"מתקן מטף תוצרת סילגי", cost:null, minPrice:250, multiplier:null, price:300, notes:"ללא התקנה וצבע"},
+  {id:22, name:"מותח כבל קידמי דגם סילגי (ללא כבל)", cost:null, minPrice:850, multiplier:null, price:850, notes:"ללא התקנה וצבע"},
+  {id:23, name:"כבל למותח קידמי 16 מ'", cost:null, minPrice:null, multiplier:2.8125, price:null, notes:""},
+  {id:24, name:"תושבת למיכל מים", cost:null, minPrice:350, multiplier:null, price:350, notes:"ללא התקנה וצבע"},
+  {id:25, name:"מותח כבל/רצועה (ללא רצועה/כבל)", cost:95, minPrice:450, multiplier:4.736, price:450, notes:"ללא התקנה וצבע"},
+  {id:26, name:"משולש להובלה ארוכה", cost:null, minPrice:250, multiplier:null, price:250, notes:"ללא התקנה וצבע"},
+  {id:27, name:"בית למשולש להובלה ארוכה", cost:null, minPrice:350, multiplier:null, price:350, notes:""},
+  {id:28, name:"מתקן גלגל רזרבי דגם רגיל סלגי", cost:null, minPrice:1800, multiplier:null, price:1800, notes:"ללא התקנה וצבע"},
+  {id:29, name:"טמבון אלומיניום", cost:null, minPrice:1600, multiplier:null, price:1600, notes:"ללא התקנה וצבע"},
+  {id:30, name:"טמבון ברזל", cost:null, minPrice:800, multiplier:null, price:800, notes:"ללא התקנה וצבע"},
+  {id:31, name:"דלת פרופיל 400/500/600", cost:null, minPrice:1800, multiplier:null, price:1800, notes:"ללא התקנה וצבע"},
+  {id:32, name:"אופציה לדלת מחוזקת (פרופיל)", cost:null, minPrice:600, multiplier:null, price:600, notes:""},
+  {id:33, name:"צבע לדלת פרופיל", cost:null, minPrice:200, multiplier:null, price:200, notes:""},
+  {id:34, name:"כבל 9 מ' למותח כבל", cost:35, minPrice:135, multiplier:3.857, price:135, notes:"ללא התקנה וצבע"},
+  {id:35, name:"רצועה 9 מ' למותח", cost:25, minPrice:125, multiplier:5.0, price:125, notes:"ללא התקנה וצבע"},
+  {id:36, name:"מגן בוץ תיקני קטן", cost:51, minPrice:155, multiplier:3.039, price:155, notes:"ללא התקנה וצבע"},
+  {id:37, name:"מגן בוץ גדול תיקני", cost:80, minPrice:185, multiplier:2.312, price:185, notes:"ללא התקנה וצבע"},
+  {id:38, name:"מגן בוץ קטן רגיל", cost:18.5, minPrice:85, multiplier:4.47, price:85, notes:"ללא התקנה וצבע"},
+  {id:39, name:"מגן בוץ גדול רגיל", cost:34, minPrice:130, multiplier:3.82, price:130, notes:"ללא התקנה וצבע"},
+  {id:40, name:"מגן בוץ תיקני צד חלק+הדפסה", cost:21, minPrice:80, multiplier:3.8, price:80, notes:"ללא התקנה וצבע"},
+  {id:41, name:"מגן בוץ צד תיקני ללא פרסום", cost:17, minPrice:80, multiplier:4.7, price:80, notes:"ללא התקנה וצבע"},
+  {id:42, name:"מגן בוץ צד תיקני עם פרסום", cost:27, minPrice:100, multiplier:3.7, price:100, notes:"ללא התקנה וצבע"},
+  {id:43, name:"מגן בוץ ארוך", cost:115, minPrice:350, multiplier:3.0434, price:350, notes:"ללא התקנה וצבע"},
+  {id:44, name:"ידית מנואלה למכשיר כבל סילגי", cost:null, minPrice:350, multiplier:null, price:350, notes:"ללא התקנה וצבע"},
+  {id:45, name:"בוכנת גז טלסקופית סטנדרטית", cost:45, minPrice:190, multiplier:4.22, price:190, notes:"ללא התקנה וצבע"},
+  {id:46, name:"תושבת בוכנת גז קצרה/ארוכה", cost:25, minPrice:80, multiplier:3.2, price:80, notes:"ללא התקנה וצבע"},
+  {id:47, name:"גומי למסילת וילון לפי 1 מ'", cost:26, minPrice:120, multiplier:4.615, price:120, notes:"ללא התקנה וצבע"},
+  {id:48, name:"פח צבע יסוד 18 ליטר", cost:380, minPrice:760, multiplier:2.0, price:760, notes:"ללא התקנה וצבע"},
+  {id:49, name:"גלון צבע יסוד (4.5 ליטר)", cost:95, minPrice:190, multiplier:2.0, price:190, notes:"ללא התקנה וצבע"},
+  {id:50, name:"פח צבע עליון סילגי 18 ליטר", cost:410, minPrice:820, multiplier:2.0, price:820, notes:"ללא התקנה וצבע"},
+  {id:51, name:"גלון צבע עליון סילגי 4.5 ליטר", cost:null, minPrice:210, multiplier:2.038, price:210, notes:"ללא התקנה וצבע"},
+  {id:52, name:"ג'ריקן מים 20 ליטר (לבן)", cost:85, minPrice:145, multiplier:1.7, price:145, notes:"ללא התקנה וצבע"},
+  {id:53, name:"ג'ריקן מים 25 ליטר (שחור)", cost:100, minPrice:180, multiplier:1.8, price:180, notes:"ללא התקנה וצבע"},
+  {id:54, name:"מיכל מים נירוסטה", cost:325, minPrice:600, multiplier:1.846, price:600, notes:"ללא התקנה וצבע"},
+  {id:55, name:"חגורת מתיחה לוילון (פלסטיק)", cost:39, minPrice:150, multiplier:3.846, price:150, notes:"ללא התקנה וצבע"},
+  {id:56, name:"חגורת מתיחה לוילון (ברזל)", cost:25, minPrice:200, multiplier:8.0, price:200, notes:"ללא התקנה וצבע"},
+  {id:57, name:"ציפוי רצפה פח מרוג 3מ''מ (2X1 מטר)", cost:123, minPrice:null, multiplier:1.0, price:123, notes:"ללא התקנה וצבע"},
+  {id:58, name:"צביעת רצפה בצבע אפוקסי + גרגירים", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:59, name:"ציר צד 185 מ''מ", cost:10, minPrice:null, multiplier:1.0, price:10, notes:"ללא התקנה וצבע"},
+  {id:60, name:"ציר אחורי 365 + בית זויתי", cost:29, minPrice:null, multiplier:1.0, price:29, notes:"ללא התקנה וצבע"},
+  {id:61, name:"הגנה פנסי דופן", cost:10, minPrice:null, multiplier:1.0, price:10, notes:"ללא התקנה וצבע"},
+  {id:62, name:"פתח איורור אלומיניום", cost:55, minPrice:null, multiplier:1.0, price:55, notes:"ללא התקנה וצבע"},
+  {id:63, name:"ציפוי רצפה פח שחור 3מ''מ (2X1 מטר)", cost:104, minPrice:null, multiplier:1.0, price:104, notes:"ללא התקנה וצבע"},
+  {id:64, name:"פרופיל אלומיניום קצה וילון", cost:21, minPrice:null, multiplier:1.0, price:21, notes:"ללא התקנה וצבע"},
+  {id:65, name:"מגן צד לפי 1 מ' (ללא צבע)", cost:16, minPrice:null, multiplier:1.0, price:16, notes:"ללא התקנה וצבע"},
+  {id:66, name:"נעילה סולר", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:67, name:"נעילה מצברים", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:68, name:"נעילה אוראה", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:69, name:"נעילה קופסת דופן", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:70, name:"נעילה לדופן הידראולית", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:71, name:"עבודה", cost:null, minPrice:null, multiplier:null, price:250, notes:"לפי שעה"},
+];
+
+let parts = JSON.parse(localStorage.getItem(PARTS_KEY) || 'null') || DEFAULT_PARTS;
+let orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+let currentOrderId = null;
+let currentOrderParts = [];
+let quoteData = null;
+
+function saveParts() { localStorage.setItem(PARTS_KEY, JSON.stringify(parts)); }
+function saveOrders() { localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); }
+
+let vatRate = parseFloat(localStorage.getItem(VAT_KEY) || '17');
+let priceHistory = JSON.parse(localStorage.getItem(PRICE_HISTORY_KEY) || '{}');
+
+function saveVat() {
+  const val = parseFloat(document.getElementById('vatInput').value);
+  if (isNaN(val) || val < 0 || val > 100) { showToast('⚠️ ערך לא תקין'); return; }
+  vatRate = val;
+  localStorage.setItem(VAT_KEY, vatRate);
+  document.getElementById('vatModal').classList.remove('open');
+  showToast('✅ מע"מ עודכן ל-' + vatRate + '%');
+}
+
+function openVatModal() {
+  document.getElementById('vatInput').value = vatRate;
+  document.getElementById('vatModal').classList.add('open');
+}
+
+function recordPriceHistory(partId, oldPrice, newPrice) {
+  if (oldPrice === newPrice) return;
+  const p = parts.find(x => x.id === partId);
+  if (!priceHistory[partId]) priceHistory[partId] = [];
+  priceHistory[partId].push({
+    date: new Date().toLocaleDateString('he-IL'),
+    fromCost: p ? p.cost : null,
+    toCost: p ? p.cost : null,
+    fromPrice: oldPrice,
+    toPrice: newPrice
+  });
+  localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
+}
+
+function showPriceHistory(partId, partName) {
+  const body = document.getElementById('historyBody');
+
+  function renderHistory() {
+    const h = priceHistory[partId] || [];
+    if (!h.length) {
+      body.innerHTML = `<div class="empty-state"><div class="icon">📈</div><p>אין היסטוריה עדיין לחלק זה</p></div>`;
+      return;
+    }
+    body.innerHTML = `
+      <div style="font-weight:700;font-size:15px;margin-bottom:14px;color:var(--primary)">${partName}</div>
+      <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="background:#eef3f9">
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">תאריך</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">עלות ישנה</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">עלות חדשה</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">מחיר לקוח ישן</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">מחיר לקוח חדש</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">שינוי</th>
+          <th style="width:36px"></th>
+        </tr></thead>
+        <tbody>
+          ${h.map((entry, i) => {
+            const fp = entry.toPrice !== undefined ? entry.toPrice : entry.to;
+            const frp = entry.fromPrice !== undefined ? entry.fromPrice : entry.from;
+            const diff = fp - frp;
+            const pct = frp ? ((diff / frp) * 100).toFixed(1) : 0;
+            const color = diff > 0 ? '#27ae60' : '#e74c3c';
+            const arrow = diff > 0 ? '▲' : '▼';
+            return `<tr style="border-bottom:1px solid #f0f4f8">
+              <td style="padding:7px 10px">${entry.date}</td>
+              <td style="padding:7px 10px;color:#aaa;text-decoration:line-through">${entry.fromCost != null ? '₪'+entry.fromCost : '—'}</td>
+              <td style="padding:7px 10px;font-weight:600">${entry.toCost != null ? '₪'+entry.toCost : '—'}</td>
+              <td style="padding:7px 10px;color:#aaa;text-decoration:line-through">₪${frp.toLocaleString()}</td>
+              <td style="padding:7px 10px;font-weight:700">₪${fp.toLocaleString()}</td>
+              <td style="padding:7px 10px;font-weight:700;color:${color}">${arrow} ${Math.abs(diff).toLocaleString()} (${Math.abs(pct)}%)</td>
+              <td style="padding:7px 10px;text-align:center">
+                <button onclick="deleteHistoryEntry(${partId},${i})" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:18px;padding:2px 5px;border-radius:5px" onmouseover="this.style.background='#fde8e8'" onmouseout="this.style.background='none'">×</button>
+              </td>
+            </tr>`;
+          }).reverse().join('')}
+        </tbody>
+      </table></div>`;
+  }
+
+  window._currentHistoryPartId = partId;
+  window._currentHistoryPartName = partName;
+  renderHistory();
+  document.getElementById('historyModal').classList.add('open');
+}
+
+function deleteHistoryEntry(partId, idx) {
+  if (!priceHistory[partId]) return;
+  priceHistory[partId].splice(idx, 1);
+  localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
+  showPriceHistory(window._currentHistoryPartId, window._currentHistoryPartName);
+  renderCatalog();
+  showToast('🗑 רשומה נמחקה');
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function newOrder() {
+  currentOrderId = null;
+  resetForm();
+  showView('new-order');
+  document.querySelectorAll('.nav-btn')[1].classList.add('active');
+}
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const idx = ['orders','new-order','catalog'].indexOf(name);
+  document.querySelectorAll('.nav-btn')[idx]?.classList.add('active');
+  if (name === 'orders') renderOrders();
+  if (name === 'catalog') renderCatalog();
+}
+
+// ══════════════════════════════════════════════
+// ORDERS LIST
+// ══════════════════════════════════════════════
+function renderOrders() {
+  const list = document.getElementById('ordersList');
+  const stats = document.getElementById('statsBar');
+  const q = (document.getElementById('ordersSearch')?.value || '').trim().toLowerCase();
+
+  const totalRevenue = orders.reduce((s, o) => s + (o.total||0), 0);
+  const openCount = orders.filter(o=>o.status==='open').length;
+  const doneCount = orders.filter(o=>o.status==='done').length;
+
+  stats.innerHTML = `
+    <div class="stat-card"><div class="stat-label">סה"כ הזמנות</div><div class="stat-value">${orders.length}</div></div>
+    <div class="stat-card"><div class="stat-label">פתוחות</div><div class="stat-value" style="color:var(--success)">${openCount}</div></div>
+    <div class="stat-card"><div class="stat-label">הושלמו</div><div class="stat-value" style="color:var(--primary)">${doneCount}</div></div>
+    <div class="stat-card"><div class="stat-label">סה"כ הכנסות</div><div class="stat-value accent">₪${totalRevenue.toLocaleString()}</div></div>
+  `;
+
+  if (!orders.length) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>אין הזמנות עדיין. לחץ "+ חדשה" ליצירת הזמנה ראשונה</p></div>';
+    return;
+  }
+
+  const filtered = q
+    ? orders.filter(o =>
+        (o.name||'').toLowerCase().includes(q) ||
+        (o.license||'').toLowerCase().includes(q) ||
+        (o.model||'').toLowerCase().includes(q))
+    : orders;
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>לא נמצאו הזמנות לחיפוש זה</p></div>';
+    return;
+  }
+
+  list.innerHTML = [...filtered].reverse().map(o => `
+    <div class="order-card" onclick="editOrder('${o.id}')">
+      <div class="order-info">
+        <div class="order-num">הזמנה #${o.id.slice(-4)} · ${o.date||''}</div>
+        <div class="order-name">${o.name}</div>
+        <div class="order-details">${[o.license, o.model].filter(Boolean).join(' · ')}</div>
+      </div>
+      <div class="order-meta">
+        <div class="order-total">₪${(o.total||0).toLocaleString()}</div>
+        <span class="status-badge ${o.status==='open'?'status-open':'status-done'}">${o.status==='open'?'פתוחה':'הושלמה'}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editOrder(id) {
+  const order = orders.find(o => o.id === id);
+  if (!order) return;
+  currentOrderId = id;
+  currentOrderParts = JSON.parse(JSON.stringify(order.parts || []));
+  document.getElementById('f-name').value = order.name || '';
+  document.getElementById('f-phone').value = order.phone || '';
+  document.getElementById('f-license').value = order.license || '';
+  document.getElementById('f-chassis').value = order.chassis || '';
+  document.getElementById('f-model').value = order.model || '';
+  document.getElementById('f-date').value = order.date || '';
+  document.getElementById('f-notes').value = order.notes || '';
+  document.getElementById('formTitle').textContent = `✏️ עריכת הזמנה #${id.slice(-4)}`;
+  document.getElementById('deleteBtn').style.display = 'inline-flex';
+  document.getElementById('completeBtn').style.display = 'inline-flex';
+  updateCompleteBtn(order.status);
+  renderPartsList();
+  showView('new-order');
+  document.querySelectorAll('.nav-btn')[1].classList.add('active');
+}
+
+function resetForm() {
+  currentOrderId = null;
+  currentOrderParts = [];
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-phone').value = '';
+  document.getElementById('f-license').value = '';
+  document.getElementById('f-chassis').value = '';
+  document.getElementById('f-model').value = '';
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('f-notes').value = '';
+  document.getElementById('formTitle').textContent = '➕ הזמנת תיקון חדשה';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('completeBtn').style.display = 'none';
+  renderPartsList();
+}
+
+function saveOrder() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('⚠️ יש להזין שם לקוח'); return; }
+  const order = {
+    id: currentOrderId || 'ord_' + Date.now(),
+    name, phone: document.getElementById('f-phone').value,
+    license: document.getElementById('f-license').value,
+    chassis: document.getElementById('f-chassis').value,
+    model: document.getElementById('f-model').value,
+    date: document.getElementById('f-date').value,
+    notes: document.getElementById('f-notes').value,
+    parts: currentOrderParts,
+    total: currentOrderParts.reduce((s,p) => s + p.price * p.qty, 0),
+    status: 'open',
+    createdAt: new Date().toISOString()
+  };
+  if (currentOrderId) {
+    const idx = orders.findIndex(o => o.id === currentOrderId);
+    if (idx >= 0) { order.status = orders[idx].status; orders[idx] = order; }
+  } else {
+    orders.push(order);
+    currentOrderId = order.id;
+    document.getElementById('deleteBtn').style.display = 'inline-flex';
+  }
+  saveOrders();
+  showToast('✅ הזמנה נשמרה!');
+}
+
+function toggleOrderStatus() {
+  if (!currentOrderId) return;
+  const order = orders.find(o => o.id === currentOrderId);
+  if (!order) return;
+  order.status = order.status === 'open' ? 'done' : 'open';
+  saveOrders();
+  updateCompleteBtn(order.status);
+  showToast(order.status === 'done' ? '✅ הזמנה סומנה כהושלמה' : '🔓 הזמנה נפתחה מחדש');
+}
+
+function updateCompleteBtn(status) {
+  const btn = document.getElementById('completeBtn');
+  if (!btn) return;
+  if (status === 'open') {
+    btn.textContent = '✅ סמן כהושלמה';
+    btn.style.borderColor = 'var(--success)';
+    btn.style.color = 'var(--success)';
+  } else {
+    btn.textContent = '🔓 פתח מחדש';
+    btn.style.borderColor = 'var(--accent-dark)';
+    btn.style.color = 'var(--accent-dark)';
+  }
+}
+
+function deleteCurrentOrder() {
+  if (!currentOrderId) return;
+  if (!confirm('למחוק הזמנה זו?')) return;
+  orders = orders.filter(o => o.id !== currentOrderId);
+  saveOrders();
+  showToast('🗑 הזמנה נמחקה');
+  showView('orders');
+}
+
+// ══════════════════════════════════════════════
+// PARTS SEARCH & TABLE
+// ══════════════════════════════════════════════
+function searchParts(q) {
+  const dd = document.getElementById('partsDropdown');
+  if (!q.trim()) { dd.classList.remove('open'); return; }
+  const results = parts.filter(p => p.name.includes(q) || (p.notes||'').includes(q))
+    .sort((a, b) => a.name.localeCompare(b.name, 'he'))
+    .slice(0,10);
+  if (!results.length) { dd.classList.remove('open'); return; }
+  dd.innerHTML = results.map(p => `
+    <div class="part-option" onmousedown="addPart(${p.id})">
+      <span>${p.name}</span>
+      <span class="part-price">${calcPrice(p) ? '₪'+calcPrice(p).toLocaleString() : '—'}</span>
+    </div>
+  `).join('');
+  dd.classList.add('open');
+}
+
+function closeDropdown() {
+  document.getElementById('partsDropdown').classList.remove('open');
+  document.getElementById('partsSearch').value = '';
+}
+
+function addPart(partId) {
+  const part = parts.find(p => p.id === partId);
+  if (!part) return;
+  const existing = currentOrderParts.find(p => p.partId === partId);
+  if (existing) { existing.qty++; }
+  else { currentOrderParts.push({ partId, name: part.name, price: calcPrice(part), qty: 1 }); }
+  renderPartsList();
+  closeDropdown();
+}
+
+function removePart(idx) {
+  currentOrderParts.splice(idx, 1);
+  renderPartsList();
+}
+
+function updateQty(idx, val) {
+  const q = parseInt(val) || 1;
+  currentOrderParts[idx].qty = Math.max(1, q);
+  updateTotal();
+}
+
+function renderPartsList() {
+  const tbody = document.getElementById('partsList');
+  const table = document.getElementById('partsTable');
+  const empty = document.getElementById('partsEmpty');
+  const totalBar = document.getElementById('totalBar');
+
+  if (!currentOrderParts.length) {
+    table.style.display = 'none';
+    empty.style.display = 'block';
+    totalBar.style.display = 'none';
+    return;
+  }
+  table.style.display = 'table';
+  empty.style.display = 'none';
+  totalBar.style.display = 'flex';
+
+  tbody.innerHTML = currentOrderParts.map((p, i) => `
+    <tr>
+      <td>${p.name}</td>
+      <td class="price-tag">₪${p.price.toLocaleString()}</td>
+      <td><input class="qty-input" type="number" min="1" value="${p.qty}" onchange="updateQty(${i}, this.value)"></td>
+      <td class="price-tag">₪${(p.price * p.qty).toLocaleString()}</td>
+      <td><button class="btn-remove" onclick="removePart(${i})">×</button></td>
+    </tr>
+  `).join('');
+  updateTotal();
+}
+
+function updateTotal() {
+  const total = currentOrderParts.reduce((s,p) => s + p.price * p.qty, 0);
+  document.getElementById('totalAmount').textContent = total.toLocaleString();
+}
+
+// ══════════════════════════════════════════════
+// CATALOG
+// ══════════════════════════════════════════════
+function calcPrice(p) {
+  // price = MAX(cost * multiplier, minPrice) - can only go up
+  if (p.cost && p.multiplier) {
+    const calc = Math.round(p.cost * p.multiplier);
+    return Math.max(calc, p.minPrice || 0);
+  }
+  return p.price || 0;
+}
+
+function renderCatalog(q = '') {
+  const filtered = (q ? parts.filter(p => p.name.includes(q)) : [...parts])
+    .sort((a, b) => a.name.localeCompare(b.name, 'he'));
+  document.getElementById('catalogBody').innerHTML = filtered.map((p) => {
+    const calcP = calcPrice(p);
+    const isCalc = p.cost && p.multiplier;
+    const priceColor = isCalc ? 'color:#1a3a5c;font-weight:700' : 'color:var(--accent-dark);font-weight:700';
+    return `<tr>
+      <td><input class="edit-inline" value="${p.name}" onchange="updatePartField(${p.id},'name',this.value)"></td>
+      <td><input class="edit-inline" type="number" placeholder="—" value="${p.cost||''}" onchange="updatePartField(${p.id},'cost',this.value?+this.value:null)" style="color:#888"></td>
+      <td><input class="edit-inline" type="number" placeholder="—" step="0.001" value="${p.multiplier||''}" onchange="updatePartField(${p.id},'multiplier',this.value?+this.value:null)" style="color:#888"></td>
+      <td><input class="edit-inline" type="number" placeholder="—" value="${p.minPrice||''}" onchange="updatePartField(${p.id},'minPrice',this.value?+this.value:null)" style="color:#888"></td>
+      <td style="${priceColor}">${calcP ? '₪'+calcP.toLocaleString() : '—'}${isCalc?'<span style="font-size:10px;color:#aaa;display:block">אוטומטי</span>':''}</td>
+      <td><input class="edit-inline" value="${p.notes||''}" onchange="updatePartField(${p.id},'notes',this.value)"></td>
+      <td style="text-align:center">
+        <button class="btn btn-sm btn-outline" onclick="showPriceHistory(${p.id},'${p.name.replace(/'/g,'').replace(/"/g,'')}')" style="padding:4px 8px;font-size:13px">${(priceHistory[p.id]||[]).length > 0 ? '📈' : '—'}</button>
+      </td>
+      <td><button class="btn-remove" onclick="deletePart(${p.id})">×</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function updatePartField(id, field, value) {
+  const p = parts.find(p => p.id === id);
+  if (!p) return;
+  const oldPrice = calcPrice(p);
+  const oldCost = p.cost;
+  p[field] = value;
+  const newPrice = calcPrice(p);
+  if (newPrice > 0) p.price = newPrice;
+  if ((field === 'cost' || field === 'multiplier' || field === 'minPrice') && oldPrice !== newPrice && oldPrice > 0 && newPrice > 0) {
+    if (!priceHistory[id]) priceHistory[id] = [];
+    priceHistory[id].push({
+      date: new Date().toLocaleDateString('he-IL'),
+      fromCost: field === 'cost' ? oldCost : p.cost,
+      toCost: p.cost,
+      fromPrice: oldPrice,
+      toPrice: newPrice
+    });
+    localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
+  }
+  saveParts();
+  renderCatalog(document.getElementById('catalogSearch')?.value || '');
+}
+
+function exportToExcel() {
+  // Build CSV with BOM for Hebrew support in Excel
+  const bom = '\uFEFF';
+  const headers = ['שם פריט', 'עלות סילגי', 'מחיר מינימלי', 'מחיר ללקוח', 'מקדם', 'הערות'];
+  const rows = parts.map(p => {
+    const price = calcPrice(p) || p.price || '';
+    return [
+      `"${(p.name||'').replace(/"/g,'""')}"`,
+      p.cost != null ? p.cost : '',
+      p.minPrice != null ? p.minPrice : '',
+      price,
+      p.multiplier != null ? p.multiplier : '',
+      `"${(p.notes||'').replace(/"/g,'""')}"`
+    ].join(',');
+  });
+  const csv = bom + headers.join(',') + '\n' + rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'מחירון_סילגי_' + new Date().toLocaleDateString('he-IL').replace(/\./g,'-') + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ קובץ אקסל הורד!');
+}
+
+function deletePart(id) {
+  if (!confirm('למחוק חלק זה?')) return;
+  parts = parts.filter(p => p.id !== id);
+  saveParts();
+  renderCatalog();
+  showToast('🗑 חלק נמחק');
+}
+
+function addNewPart() {
+  const name = prompt('שם החלק:');
+  if (!name) return;
+  const priceStr = prompt('מחיר (₪):');
+  const price = parseFloat(priceStr) || 0;
+  const newId = Math.max(...parts.map(p=>p.id), 0) + 1;
+  parts.push({ id: newId, name, price, notes: '' });
+  saveParts();
+  renderCatalog();
+  showToast('✅ חלק נוסף!');
+}
+
+// ══════════════════════════════════════════════
+// QUOTE PDF
+// ══════════════════════════════════════════════
+function generateQuote() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('⚠️ יש להזין שם לקוח'); return; }
+  quoteData = {
+    name, phone: document.getElementById('f-phone').value,
+    license: document.getElementById('f-license').value,
+    chassis: document.getElementById('f-chassis').value,
+    model: document.getElementById('f-model').value,
+    date: document.getElementById('f-date').value,
+    notes: document.getElementById('f-notes').value,
+    parts: currentOrderParts,
+    total: currentOrderParts.reduce((s,p) => s + p.price * p.qty, 0),
+    quoteNum: 'SQ-' + Date.now().toString().slice(-5)
+  };
+  document.getElementById('quoteModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('quoteModal').classList.remove('open');
+}
+
+function printQuote() {
+  if (!quoteData) return;
+  const d = quoteData;
+  const vat = Math.round(d.total * (vatRate / 100));
+  const totalWithVat = d.total + vat;
+  const dateStr = d.date ? d.date.split('-').reverse().join('.') : new Date().toLocaleDateString('he-IL');
+
+  const regularParts = d.parts.filter(p => p.name !== 'עבודה');
+  const laborParts = d.parts.filter(p => p.name === 'עבודה');
+
+  const regularRows = regularParts.map((p,i) => `
+    <tr>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${i+1}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${p.name}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">${p.qty}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;font-weight:700">₪${(p.price*p.qty).toLocaleString()}</td>
+    </tr>`).join('');
+
+  const laborTotal = laborParts.reduce((s,p) => s + p.price * p.qty, 0);
+  const laborRow = laborParts.length ? `
+    <tr style="background:#f4f7fb">
+      <td colspan="3" style="padding:10px 12px;border-top:2px solid #1a3a5c;font-weight:700;font-size:14px;color:#1a3a5c">עבודה</td>
+      <td style="padding:10px 12px;border-top:2px solid #1a3a5c;text-align:center;font-weight:800;font-size:15px;color:#1a3a5c">₪${laborTotal.toLocaleString()}</td>
+    </tr>` : '';
+
+  const partsRows = regularRows + laborRow;
+
+  const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8">
+<title>הצעת מחיר – ${d.name}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl;padding:20px 24px;font-size:13px}
+  @page{margin:8mm;size:A4}
+  @media print{body{padding:0}}
+</style>
+</head><body>
+
+<!-- HEADER -->
+<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #1a3a5c;padding-bottom:14px;margin-bottom:16px">
+  <div>
+    <div style="font-size:26px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div>
+    <div style="font-size:12px;color:#888;margin-top:3px">יצור מרכבים למשאיות</div>
+    <div style="font-size:11px;color:#999;margin-top:6px">רח' הקידמה 16, א.ת. צפוני, אשדוד | 08-9400967 | office@silagi.co.il</div>
+  </div>
+  <div style="text-align:left">
+    <div style="background:#e8a020;color:#1a3a5c;padding:6px 16px;border-radius:6px;font-size:15px;font-weight:900;margin-bottom:8px">הצעת מחיר</div>
+    <div style="font-size:12px;color:#888">מספר: <b style="color:#1a3a5c">${d.quoteNum}</b></div>
+    <div style="font-size:12px;color:#888;margin-top:3px">תאריך: <b style="color:#1a3a5c">${dateStr}</b></div>
+  </div>
+</div>
+
+<!-- CLIENT INFO -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:16px;border:1px solid #ddd;border-radius:8px;overflow:hidden">
+  <div style="padding:10px 14px;border-left:1px solid #ddd;background:#f8fafc">
+    <div style="font-size:10px;color:#888;margin-bottom:3px">לכבוד</div>
+    <div style="font-size:18px;font-weight:800;color:#1a3a5c">${d.name}</div>
+    ${d.phone ? `<div style="font-size:13px;color:#555;margin-top:2px">📞 ${d.phone}</div>` : ''}
+  </div>
+  <div style="padding:10px 14px;background:#f8fafc">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">
+      ${d.license ? `<div><span style="color:#888;font-size:10px;display:block">רישוי</span><b>${d.license}</b></div>` : ''}
+      ${d.chassis ? `<div><span style="color:#888;font-size:10px;display:block">שלדה</span><b>${d.chassis}</b></div>` : ''}
+      ${d.model ? `<div><span style="color:#888;font-size:10px;display:block">דגם</span><b>${d.model}</b></div>` : ''}
+    </div>
+  </div>
+</div>
+
+${d.notes ? `
+<div style="background:#fffbf0;border:1px solid #f0d080;border-radius:8px;padding:10px 14px;margin-bottom:16px">
+  <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:700">תיאור העבודה</div>
+  <div style="font-size:13px;line-height:1.5">${d.notes}</div>
+</div>` : ''}
+
+<!-- PARTS TABLE -->
+<table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+  <thead>
+    <tr style="background:#1a3a5c;color:#fff">
+      <th style="padding:10px 12px;text-align:right;font-size:12px;width:40px">#</th>
+      <th style="padding:10px 12px;text-align:right;font-size:12px">תיאור חלק / עבודה</th>
+      <th style="padding:10px 12px;text-align:center;font-size:12px;width:60px">כמות</th>
+      <th style="padding:10px 12px;text-align:center;font-size:12px;width:120px">מחיר ₪</th>
+    </tr>
+  </thead>
+  <tbody>${partsRows}</tbody>
+</table>
+
+<!-- TOTALS -->
+<div style="display:flex;justify-content:flex-end;margin-bottom:20px">
+  <div style="width:280px">
+    <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">
+      <span>סכום לפני מע"מ</span><span>₪${d.total.toLocaleString()}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">
+      <span>מע"מ ${vatRate}%</span><span>₪${vat.toLocaleString()}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px">
+      <span>סה"כ לתשלום</span><span style="color:#e8a020">₪${totalWithVat.toLocaleString()}</span>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="border-top:2px solid #eee;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <div>
+    <div style="font-size:11px;color:#888;margin-bottom:4px">הצעה זו בתוקף ל-30 יום</div>
+    <div style="font-size:11px;color:#888">המחירים אינם כוללים מע"מ אלא אם צוין אחרת</div>
+  </div>
+  <div style="text-align:left">
+    <div style="font-size:12px;color:#888;margin-bottom:20px">חתימה ואישור לקוח: ___________________</div>
+  </div>
+</div>
+
+<scr` + `ipt>window.onload=function(){setTimeout(function(){window.print();},500);}<\/scr` + `ipt>
+</body></html>`;
+
+  closeModal();
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+}
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+renderOrders();
+document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
