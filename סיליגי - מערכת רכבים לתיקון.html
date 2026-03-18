@@ -269,8 +269,11 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
       <table class="catalog-table">
         <thead><tr>
           <th>שם חלק</th>
-          <th style="width:130px">מחיר ₪</th>
-          <th style="width:180px">הערות</th>
+          <th style="width:90px">עלות שלנו ₪</th>
+          <th style="width:80px">מקדם ×</th>
+          <th style="width:100px">מינימום ₪</th>
+          <th style="width:110px">מחיר ללקוח ₪</th>
+          <th>הערות</th>
           <th style="width:70px">היסטוריה</th>
           <th style="width:50px"></th>
         </tr></thead>
@@ -279,6 +282,7 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
     </div>
     <div class="actions-bar">
       <button class="btn btn-primary" onclick="addNewPart()">➕ הוסף חלק</button>
+      <button class="btn btn-outline" onclick="exportToExcel()">📊 ייצא לאקסל</button>
     </div>
   </div>
 </div>
@@ -349,53 +353,77 @@ const VAT_KEY = 'silagi_vat';
 const PRICE_HISTORY_KEY = 'silagi_price_history';
 
 const DEFAULT_PARTS = [
-  {id:1, name:"א.כ פח מידות 600-1000 מ''מ", price:1450, notes:"ללא התקנה וצבע"},
-  {id:2, name:"סלסלה פח 600-1250 מ''מ", price:1200, notes:"ללא התקנה וצבע"},
-  {id:3, name:"א.כ מעל 1000 מ''מ", price:1800, notes:"ללא התקנה וצבע"},
-  {id:4, name:"סלסלה מעל 1250 מ''מ", price:1500, notes:"ללא התקנה וצבע"},
-  {id:5, name:"סל עמודים", price:700, notes:"ללא התקנה וצבע"},
-  {id:6, name:"דלץ עץ", price:2600, notes:"ללא התקנה וצבע"},
-  {id:7, name:"דלת פח", price:2000, notes:"ללא התקנה וצבע"},
-  {id:8, name:"רצ'ר", price:450, notes:"ללא התקנה וצבע"},
-  {id:9, name:"סוף וילון אלומיניום", price:350, notes:""},
-  {id:10, name:"מטף", price:300, notes:""},
-  {id:11, name:"מותח כבל קידמי", price:850, notes:""},
-  {id:12, name:"תושבת למיכל מים", price:350, notes:""},
-  {id:13, name:"מתקן עגלת משטחים", price:600, notes:""},
-  {id:14, name:"מותח כבל\\רצועה", price:450, notes:""},
-  {id:15, name:"כבל 9 מ' למותח כבל", price:150, notes:""},
-  {id:16, name:"כבל 9 מ' למותח רצועה", price:120, notes:""},
-  {id:17, name:"משולש להובלה ארוכה", price:750, notes:""},
-  {id:18, name:"מתקן לגלגל רזרבי סלסלה", price:2200, notes:""},
-  {id:19, name:"מתקן גלגל רזרבי דגם רגיל", price:1800, notes:""},
-  {id:20, name:"טמבון אלומיניום", price:1600, notes:""},
-  {id:21, name:"טמבון ברזל", price:800, notes:""},
-  {id:22, name:"דלת פרופיל 400/500/600", price:1700, notes:""},
-  {id:23, name:"מגן בוץ גדול רגיל", price:140, notes:""},
-  {id:24, name:"מגן בוץ גדול תיקני", price:180, notes:""},
-  {id:25, name:"מגן בוץ קטן רגיל", price:90, notes:""},
-  {id:26, name:"מגן בוץ תיקני צד", price:80, notes:""},
-  {id:27, name:"ידית מנואלה למכשיר כבל סילגי", price:500, notes:""},
-  {id:28, name:"בוכנת גז 900N מהלך 600", price:1100, notes:""},
-  {id:29, name:"בוכנת גז 900N מהלך 800", price:2300, notes:""},
-  {id:30, name:"תושבת בוכנת גז קצרה/ארוכה", price:23, notes:""},
-  {id:31, name:"גומי למסילת וילון", price:26, notes:""},
-  {id:32, name:"גלגל תוצרת חוץ וילון", price:53, notes:""},
-  {id:33, name:"גלון צבע יסוד (5 ליטר)", price:140, notes:""},
-  {id:34, name:"גלון צבע עליון סילגי", price:310, notes:""},
-  {id:35, name:"ג'ריקן מים 20 ליטר (לבן)", price:73, notes:""},
-  {id:36, name:"ג'ריקן מים 25 ליטר (שחור)", price:90, notes:""},
-  {id:37, name:"חגורת מתיחה לוילון (פלסטיק)", price:95, notes:""},
-  {id:38, name:"ציפוי רצפה פח מרוג 3מ''מ (2X1 מטר)", price:123, notes:""},
-  {id:39, name:"צביעת רצפה בצבע אפוקסי + גרגירים", price:3000, notes:""},
-  {id:40, name:"ציר צד 185 מ''מ", price:10, notes:""},
-  {id:41, name:"ציר אחורי 365 + בית זויתי", price:29, notes:""},
-  {id:42, name:"רצ'ט מתיחה לוילון", price:95, notes:""},
-  {id:43, name:"הגנה פנסי דופן", price:7.5, notes:""},
-  {id:44, name:"פתח איורור אלומיניום", price:55, notes:""},
-  {id:45, name:"ציפוי רצפה פח שחור 3מ''מ (2X1 מטר)", price:104, notes:""},
-  {id:46, name:"פרופיל אלומיניום קצה וילון", price:21, notes:""},
-  {id:47, name:"עבודת כושר / שעת עבודה", price:250, notes:"לפי שעה"},
+  {id:1, name:"א.כ פח מידות 600-1000 מ''מ", cost:null, minPrice:1600, multiplier:null, price:1600, notes:"ללא התקנה וצבע"},
+  {id:2, name:"סלסלה פח 600-1250 מ''מ", cost:null, minPrice:1350, multiplier:null, price:1350, notes:"ללא התקנה וצבע"},
+  {id:3, name:"א.כ מעל 1000-1500 מ''מ", cost:null, minPrice:2200, multiplier:null, price:2200, notes:"ללא התקנה וצבע"},
+  {id:4, name:"תוספת מכסה לסלסלה", cost:null, minPrice:1300, multiplier:null, price:1300, notes:"ללא התקנה וצבע"},
+  {id:5, name:"סלסלה מעל 1250-2500 מ''מ", cost:null, minPrice:1750, multiplier:null, price:1750, notes:"ללא התקנה וצבע"},
+  {id:6, name:"תוספת לא.כ נגד מים", cost:null, minPrice:350, multiplier:null, price:350, notes:"ללא התקנה וצבע"},
+  {id:7, name:"צבע א.כ/סלסלה", cost:null, minPrice:250, multiplier:null, price:250, notes:"ללא התקנה וצבע"},
+  {id:8, name:"א.כ מעל 1500 מ''מ (בהתאמה אישית)", cost:null, minPrice:3300, multiplier:null, price:3300, notes:"ללא התקנה וצבע"},
+  {id:9, name:"סל עמודים", cost:null, minPrice:700, multiplier:null, price:700, notes:"ללא התקנה וצבע"},
+  {id:10, name:"צבע לסל עמודים", cost:null, minPrice:130, multiplier:null, price:130, notes:"ללא התקנה וצבע"},
+  {id:11, name:"דלץ עץ", cost:null, minPrice:2600, multiplier:null, price:2600, notes:"ללא התקנה וצבע"},
+  {id:12, name:"צבע לדלת עץ", cost:null, minPrice:200, multiplier:null, price:200, notes:"ללא התקנה וצבע"},
+  {id:13, name:"דלת פח", cost:null, minPrice:1850, multiplier:null, price:1850, notes:"ללא התקנה וצבע"},
+  {id:14, name:"אופציה לדלת מחוזקת", cost:null, minPrice:600, multiplier:null, price:600, notes:"ללא התקנה וצבע"},
+  {id:15, name:"צבע לדלת פח", cost:null, minPrice:200, multiplier:null, price:200, notes:"ללא התקנה וצבע"},
+  {id:16, name:"רצ'ר ימין/שמאל", cost:160, minPrice:450, multiplier:2.8125, price:450, notes:"ללא התקנה וצבע"},
+  {id:17, name:"סוף וילון אלומיניום", cost:null, minPrice:250, multiplier:null, price:250, notes:"ללא התקנה וצבע"},
+  {id:18, name:"סוף וילון אלומיניום + התקנה", cost:null, minPrice:530, multiplier:null, price:530, notes:""},
+  {id:19, name:"צינור לוילון", cost:null, minPrice:150, multiplier:null, price:150, notes:""},
+  {id:20, name:"צינור לוילון + התקנה", cost:null, minPrice:480, multiplier:null, price:480, notes:""},
+  {id:21, name:"מתקן מטף תוצרת סילגי", cost:null, minPrice:250, multiplier:null, price:300, notes:"ללא התקנה וצבע"},
+  {id:22, name:"מותח כבל קידמי דגם סילגי (ללא כבל)", cost:null, minPrice:850, multiplier:null, price:850, notes:"ללא התקנה וצבע"},
+  {id:23, name:"כבל למותח קידמי 16 מ'", cost:null, minPrice:null, multiplier:2.8125, price:null, notes:""},
+  {id:24, name:"תושבת למיכל מים", cost:null, minPrice:350, multiplier:null, price:350, notes:"ללא התקנה וצבע"},
+  {id:25, name:"מותח כבל/רצועה (ללא רצועה/כבל)", cost:95, minPrice:450, multiplier:4.736, price:450, notes:"ללא התקנה וצבע"},
+  {id:26, name:"משולש להובלה ארוכה", cost:null, minPrice:250, multiplier:null, price:250, notes:"ללא התקנה וצבע"},
+  {id:27, name:"בית למשולש להובלה ארוכה", cost:null, minPrice:350, multiplier:null, price:350, notes:""},
+  {id:28, name:"מתקן גלגל רזרבי דגם רגיל סלגי", cost:null, minPrice:1800, multiplier:null, price:1800, notes:"ללא התקנה וצבע"},
+  {id:29, name:"טמבון אלומיניום", cost:null, minPrice:1600, multiplier:null, price:1600, notes:"ללא התקנה וצבע"},
+  {id:30, name:"טמבון ברזל", cost:null, minPrice:800, multiplier:null, price:800, notes:"ללא התקנה וצבע"},
+  {id:31, name:"דלת פרופיל 400/500/600", cost:null, minPrice:1800, multiplier:null, price:1800, notes:"ללא התקנה וצבע"},
+  {id:32, name:"אופציה לדלת מחוזקת (פרופיל)", cost:null, minPrice:600, multiplier:null, price:600, notes:""},
+  {id:33, name:"צבע לדלת פרופיל", cost:null, minPrice:200, multiplier:null, price:200, notes:""},
+  {id:34, name:"כבל 9 מ' למותח כבל", cost:35, minPrice:135, multiplier:3.857, price:135, notes:"ללא התקנה וצבע"},
+  {id:35, name:"רצועה 9 מ' למותח", cost:25, minPrice:125, multiplier:5.0, price:125, notes:"ללא התקנה וצבע"},
+  {id:36, name:"מגן בוץ תיקני קטן", cost:51, minPrice:155, multiplier:3.039, price:155, notes:"ללא התקנה וצבע"},
+  {id:37, name:"מגן בוץ גדול תיקני", cost:80, minPrice:185, multiplier:2.312, price:185, notes:"ללא התקנה וצבע"},
+  {id:38, name:"מגן בוץ קטן רגיל", cost:18.5, minPrice:85, multiplier:4.47, price:85, notes:"ללא התקנה וצבע"},
+  {id:39, name:"מגן בוץ גדול רגיל", cost:34, minPrice:130, multiplier:3.82, price:130, notes:"ללא התקנה וצבע"},
+  {id:40, name:"מגן בוץ תיקני צד חלק+הדפסה", cost:21, minPrice:80, multiplier:3.8, price:80, notes:"ללא התקנה וצבע"},
+  {id:41, name:"מגן בוץ צד תיקני ללא פרסום", cost:17, minPrice:80, multiplier:4.7, price:80, notes:"ללא התקנה וצבע"},
+  {id:42, name:"מגן בוץ צד תיקני עם פרסום", cost:27, minPrice:100, multiplier:3.7, price:100, notes:"ללא התקנה וצבע"},
+  {id:43, name:"מגן בוץ ארוך", cost:115, minPrice:350, multiplier:3.0434, price:350, notes:"ללא התקנה וצבע"},
+  {id:44, name:"ידית מנואלה למכשיר כבל סילגי", cost:null, minPrice:350, multiplier:null, price:350, notes:"ללא התקנה וצבע"},
+  {id:45, name:"בוכנת גז טלסקופית סטנדרטית", cost:45, minPrice:190, multiplier:4.22, price:190, notes:"ללא התקנה וצבע"},
+  {id:46, name:"תושבת בוכנת גז קצרה/ארוכה", cost:25, minPrice:80, multiplier:3.2, price:80, notes:"ללא התקנה וצבע"},
+  {id:47, name:"גומי למסילת וילון לפי 1 מ'", cost:26, minPrice:120, multiplier:4.615, price:120, notes:"ללא התקנה וצבע"},
+  {id:48, name:"פח צבע יסוד 18 ליטר", cost:380, minPrice:760, multiplier:2.0, price:760, notes:"ללא התקנה וצבע"},
+  {id:49, name:"גלון צבע יסוד (4.5 ליטר)", cost:95, minPrice:190, multiplier:2.0, price:190, notes:"ללא התקנה וצבע"},
+  {id:50, name:"פח צבע עליון סילגי 18 ליטר", cost:410, minPrice:820, multiplier:2.0, price:820, notes:"ללא התקנה וצבע"},
+  {id:51, name:"גלון צבע עליון סילגי 4.5 ליטר", cost:null, minPrice:210, multiplier:2.038, price:210, notes:"ללא התקנה וצבע"},
+  {id:52, name:"ג'ריקן מים 20 ליטר (לבן)", cost:85, minPrice:145, multiplier:1.7, price:145, notes:"ללא התקנה וצבע"},
+  {id:53, name:"ג'ריקן מים 25 ליטר (שחור)", cost:100, minPrice:180, multiplier:1.8, price:180, notes:"ללא התקנה וצבע"},
+  {id:54, name:"מיכל מים נירוסטה", cost:325, minPrice:600, multiplier:1.846, price:600, notes:"ללא התקנה וצבע"},
+  {id:55, name:"חגורת מתיחה לוילון (פלסטיק)", cost:39, minPrice:150, multiplier:3.846, price:150, notes:"ללא התקנה וצבע"},
+  {id:56, name:"חגורת מתיחה לוילון (ברזל)", cost:25, minPrice:200, multiplier:8.0, price:200, notes:"ללא התקנה וצבע"},
+  {id:57, name:"ציפוי רצפה פח מרוג 3מ''מ (2X1 מטר)", cost:123, minPrice:null, multiplier:1.0, price:123, notes:"ללא התקנה וצבע"},
+  {id:58, name:"צביעת רצפה בצבע אפוקסי + גרגירים", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:59, name:"ציר צד 185 מ''מ", cost:10, minPrice:null, multiplier:1.0, price:10, notes:"ללא התקנה וצבע"},
+  {id:60, name:"ציר אחורי 365 + בית זויתי", cost:29, minPrice:null, multiplier:1.0, price:29, notes:"ללא התקנה וצבע"},
+  {id:61, name:"הגנה פנסי דופן", cost:10, minPrice:null, multiplier:1.0, price:10, notes:"ללא התקנה וצבע"},
+  {id:62, name:"פתח איורור אלומיניום", cost:55, minPrice:null, multiplier:1.0, price:55, notes:"ללא התקנה וצבע"},
+  {id:63, name:"ציפוי רצפה פח שחור 3מ''מ (2X1 מטר)", cost:104, minPrice:null, multiplier:1.0, price:104, notes:"ללא התקנה וצבע"},
+  {id:64, name:"פרופיל אלומיניום קצה וילון", cost:21, minPrice:null, multiplier:1.0, price:21, notes:"ללא התקנה וצבע"},
+  {id:65, name:"מגן צד לפי 1 מ' (ללא צבע)", cost:16, minPrice:null, multiplier:1.0, price:16, notes:"ללא התקנה וצבע"},
+  {id:66, name:"נעילה סולר", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:67, name:"נעילה מצברים", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:68, name:"נעילה אוראה", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:69, name:"נעילה קופסת דופן", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:70, name:"נעילה לדופן הידראולית", cost:null, minPrice:null, multiplier:null, price:null, notes:"ללא התקנה וצבע"},
+  {id:71, name:"עבודה", cost:null, minPrice:null, multiplier:null, price:250, notes:"לפי שעה"},
 ];
 
 let parts = JSON.parse(localStorage.getItem(PARTS_KEY) || 'null') || DEFAULT_PARTS;
@@ -426,17 +454,19 @@ function openVatModal() {
 
 function recordPriceHistory(partId, oldPrice, newPrice) {
   if (oldPrice === newPrice) return;
+  const p = parts.find(x => x.id === partId);
   if (!priceHistory[partId]) priceHistory[partId] = [];
   priceHistory[partId].push({
     date: new Date().toLocaleDateString('he-IL'),
-    from: oldPrice,
-    to: newPrice
+    fromCost: p ? p.cost : null,
+    toCost: p ? p.cost : null,
+    fromPrice: oldPrice,
+    toPrice: newPrice
   });
   localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
 }
 
 function showPriceHistory(partId, partName) {
-  const history = priceHistory[partId] || [];
   const body = document.getElementById('historyBody');
 
   function renderHistory() {
@@ -447,37 +477,43 @@ function showPriceHistory(partId, partName) {
     }
     body.innerHTML = `
       <div style="font-weight:700;font-size:15px;margin-bottom:14px;color:var(--primary)">${partName}</div>
-      <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
         <thead><tr style="background:#eef3f9">
-          <th style="padding:8px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--primary)">תאריך</th>
-          <th style="padding:8px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--primary)">מחיר ישן</th>
-          <th style="padding:8px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--primary)">מחיר חדש</th>
-          <th style="padding:8px 12px;text-align:right;font-size:12px;font-weight:700;color:var(--primary)">שינוי</th>
-          <th style="padding:8px 12px;width:40px"></th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">תאריך</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">עלות ישנה</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">עלות חדשה</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">מחיר לקוח ישן</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">מחיר לקוח חדש</th>
+          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">שינוי</th>
+          <th style="width:36px"></th>
         </tr></thead>
         <tbody>
           ${h.map((entry, i) => {
-            const diff = entry.to - entry.from;
-            const pct = ((diff / entry.from) * 100).toFixed(1);
+            const fp = entry.toPrice !== undefined ? entry.toPrice : entry.to;
+            const frp = entry.fromPrice !== undefined ? entry.fromPrice : entry.from;
+            const diff = fp - frp;
+            const pct = frp ? ((diff / frp) * 100).toFixed(1) : 0;
             const color = diff > 0 ? '#27ae60' : '#e74c3c';
             const arrow = diff > 0 ? '▲' : '▼';
             return `<tr style="border-bottom:1px solid #f0f4f8">
-              <td style="padding:9px 12px">${entry.date}</td>
-              <td style="padding:9px 12px;color:#888;text-decoration:line-through">₪${entry.from.toLocaleString()}</td>
-              <td style="padding:9px 12px;font-weight:700">₪${entry.to.toLocaleString()}</td>
-              <td style="padding:9px 12px;font-weight:700;color:${color}">${arrow} ${Math.abs(diff).toLocaleString()} (${Math.abs(pct)}%)</td>
-              <td style="padding:9px 12px;text-align:center">
-                <button onclick="deleteHistoryEntry(${partId},${i})" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:18px;padding:2px 6px;border-radius:6px;" onmouseover="this.style.background='#fde8e8'" onmouseout="this.style.background='none'">×</button>
+              <td style="padding:7px 10px">${entry.date}</td>
+              <td style="padding:7px 10px;color:#aaa;text-decoration:line-through">${entry.fromCost != null ? '₪'+entry.fromCost : '—'}</td>
+              <td style="padding:7px 10px;font-weight:600">${entry.toCost != null ? '₪'+entry.toCost : '—'}</td>
+              <td style="padding:7px 10px;color:#aaa;text-decoration:line-through">₪${frp.toLocaleString()}</td>
+              <td style="padding:7px 10px;font-weight:700">₪${fp.toLocaleString()}</td>
+              <td style="padding:7px 10px;font-weight:700;color:${color}">${arrow} ${Math.abs(diff).toLocaleString()} (${Math.abs(pct)}%)</td>
+              <td style="padding:7px 10px;text-align:center">
+                <button onclick="deleteHistoryEntry(${partId},${i})" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:18px;padding:2px 5px;border-radius:5px" onmouseover="this.style.background='#fde8e8'" onmouseout="this.style.background='none'">×</button>
               </td>
             </tr>`;
           }).reverse().join('')}
         </tbody>
-      </table>`;
+      </table></div>`;
   }
 
   window._currentHistoryPartId = partId;
   window._currentHistoryPartName = partName;
-
   renderHistory();
   document.getElementById('historyModal').classList.add('open');
 }
@@ -666,12 +702,14 @@ function deleteCurrentOrder() {
 function searchParts(q) {
   const dd = document.getElementById('partsDropdown');
   if (!q.trim()) { dd.classList.remove('open'); return; }
-  const results = parts.filter(p => p.name.includes(q) || (p.notes||'').includes(q)).slice(0,10);
+  const results = parts.filter(p => p.name.includes(q) || (p.notes||'').includes(q))
+    .sort((a, b) => a.name.localeCompare(b.name, 'he'))
+    .slice(0,10);
   if (!results.length) { dd.classList.remove('open'); return; }
   dd.innerHTML = results.map(p => `
     <div class="part-option" onmousedown="addPart(${p.id})">
       <span>${p.name}</span>
-      <span class="part-price">₪${p.price.toLocaleString()}</span>
+      <span class="part-price">${calcPrice(p) ? '₪'+calcPrice(p).toLocaleString() : '—'}</span>
     </div>
   `).join('');
   dd.classList.add('open');
@@ -687,7 +725,7 @@ function addPart(partId) {
   if (!part) return;
   const existing = currentOrderParts.find(p => p.partId === partId);
   if (existing) { existing.qty++; }
-  else { currentOrderParts.push({ partId, name: part.name, price: part.price, qty: 1 }); }
+  else { currentOrderParts.push({ partId, name: part.name, price: calcPrice(part), qty: 1 }); }
   renderPartsList();
   closeDropdown();
 }
@@ -739,28 +777,84 @@ function updateTotal() {
 // ══════════════════════════════════════════════
 // CATALOG
 // ══════════════════════════════════════════════
+function calcPrice(p) {
+  // price = MAX(cost * multiplier, minPrice) - can only go up
+  if (p.cost && p.multiplier) {
+    const calc = Math.round(p.cost * p.multiplier);
+    return Math.max(calc, p.minPrice || 0);
+  }
+  return p.price || 0;
+}
+
 function renderCatalog(q = '') {
-  const filtered = q ? parts.filter(p => p.name.includes(q)) : parts;
-  document.getElementById('catalogBody').innerHTML = filtered.map((p, i) => `
-    <tr>
+  const filtered = (q ? parts.filter(p => p.name.includes(q)) : [...parts])
+    .sort((a, b) => a.name.localeCompare(b.name, 'he'));
+  document.getElementById('catalogBody').innerHTML = filtered.map((p) => {
+    const calcP = calcPrice(p);
+    const isCalc = p.cost && p.multiplier;
+    const priceColor = isCalc ? 'color:#1a3a5c;font-weight:700' : 'color:var(--accent-dark);font-weight:700';
+    return `<tr>
       <td><input class="edit-inline" value="${p.name}" onchange="updatePartField(${p.id},'name',this.value)"></td>
-      <td><input class="edit-inline" style="font-weight:700;color:var(--accent-dark)" type="number" value="${p.price}" onchange="updatePartField(${p.id},'price',+this.value)"></td>
+      <td><input class="edit-inline" type="number" placeholder="—" value="${p.cost||''}" onchange="updatePartField(${p.id},'cost',this.value?+this.value:null)" style="color:#888"></td>
+      <td><input class="edit-inline" type="number" placeholder="—" step="0.001" value="${p.multiplier||''}" onchange="updatePartField(${p.id},'multiplier',this.value?+this.value:null)" style="color:#888"></td>
+      <td><input class="edit-inline" type="number" placeholder="—" value="${p.minPrice||''}" onchange="updatePartField(${p.id},'minPrice',this.value?+this.value:null)" style="color:#888"></td>
+      <td style="${priceColor}">${calcP ? '₪'+calcP.toLocaleString() : '—'}${isCalc?'<span style="font-size:10px;color:#aaa;display:block">אוטומטי</span>':''}</td>
       <td><input class="edit-inline" value="${p.notes||''}" onchange="updatePartField(${p.id},'notes',this.value)"></td>
       <td style="text-align:center">
-        <button class="btn btn-sm btn-outline" onclick="showPriceHistory(${p.id},'${p.name.replace(/'/g,'')}')" title="היסטוריית מחירים" style="padding:4px 8px;font-size:13px">${(priceHistory[p.id]||[]).length > 0 ? '📈' : '—'}</button>
+        <button class="btn btn-sm btn-outline" onclick="showPriceHistory(${p.id},'${p.name.replace(/'/g,'').replace(/"/g,'')}')" style="padding:4px 8px;font-size:13px">${(priceHistory[p.id]||[]).length > 0 ? '📈' : '—'}</button>
       </td>
       <td><button class="btn-remove" onclick="deletePart(${p.id})">×</button></td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 function updatePartField(id, field, value) {
   const p = parts.find(p => p.id === id);
-  if (p) {
-    if (field === 'price') recordPriceHistory(id, p.price, value);
-    p[field] = value;
-    saveParts();
+  if (!p) return;
+  const oldPrice = calcPrice(p);
+  const oldCost = p.cost;
+  p[field] = value;
+  const newPrice = calcPrice(p);
+  if (newPrice > 0) p.price = newPrice;
+  if ((field === 'cost' || field === 'multiplier' || field === 'minPrice') && oldPrice !== newPrice && oldPrice > 0 && newPrice > 0) {
+    if (!priceHistory[id]) priceHistory[id] = [];
+    priceHistory[id].push({
+      date: new Date().toLocaleDateString('he-IL'),
+      fromCost: field === 'cost' ? oldCost : p.cost,
+      toCost: p.cost,
+      fromPrice: oldPrice,
+      toPrice: newPrice
+    });
+    localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
   }
+  saveParts();
+  renderCatalog(document.getElementById('catalogSearch')?.value || '');
+}
+
+function exportToExcel() {
+  // Build CSV with BOM for Hebrew support in Excel
+  const bom = '\uFEFF';
+  const headers = ['שם פריט', 'עלות סילגי', 'מחיר מינימלי', 'מחיר ללקוח', 'מקדם', 'הערות'];
+  const rows = parts.map(p => {
+    const price = calcPrice(p) || p.price || '';
+    return [
+      `"${(p.name||'').replace(/"/g,'""')}"`,
+      p.cost != null ? p.cost : '',
+      p.minPrice != null ? p.minPrice : '',
+      price,
+      p.multiplier != null ? p.multiplier : '',
+      `"${(p.notes||'').replace(/"/g,'""')}"`
+    ].join(',');
+  });
+  const csv = bom + headers.join(',') + '\n' + rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'מחירון_סילגי_' + new Date().toLocaleDateString('he-IL').replace(/\./g,'-') + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ קובץ אקסל הורד!');
 }
 
 function deletePart(id) {
@@ -814,15 +908,25 @@ function printQuote() {
   const totalWithVat = d.total + vat;
   const dateStr = d.date ? d.date.split('-').reverse().join('.') : new Date().toLocaleDateString('he-IL');
 
-  const partsRows = d.parts.map((p,i) => `
+  const regularParts = d.parts.filter(p => p.name !== 'עבודה');
+  const laborParts = d.parts.filter(p => p.name === 'עבודה');
+
+  const regularRows = regularParts.map((p,i) => `
     <tr>
       <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${i+1}</td>
       <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${p.name}</td>
       <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">${p.qty}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">₪${p.price.toLocaleString()}</td>
       <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;font-weight:700">₪${(p.price*p.qty).toLocaleString()}</td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
+
+  const laborTotal = laborParts.reduce((s,p) => s + p.price * p.qty, 0);
+  const laborRow = laborParts.length ? `
+    <tr style="background:#f4f7fb">
+      <td colspan="3" style="padding:10px 12px;border-top:2px solid #1a3a5c;font-weight:700;font-size:14px;color:#1a3a5c">עבודה</td>
+      <td style="padding:10px 12px;border-top:2px solid #1a3a5c;text-align:center;font-weight:800;font-size:15px;color:#1a3a5c">₪${laborTotal.toLocaleString()}</td>
+    </tr>` : '';
+
+  const partsRows = regularRows + laborRow;
 
   const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8">
 <title>הצעת מחיר – ${d.name}</title>
@@ -877,8 +981,7 @@ ${d.notes ? `
       <th style="padding:10px 12px;text-align:right;font-size:12px;width:40px">#</th>
       <th style="padding:10px 12px;text-align:right;font-size:12px">תיאור חלק / עבודה</th>
       <th style="padding:10px 12px;text-align:center;font-size:12px;width:60px">כמות</th>
-      <th style="padding:10px 12px;text-align:center;font-size:12px;width:100px">מחיר יח'</th>
-      <th style="padding:10px 12px;text-align:center;font-size:12px;width:100px">סה"כ</th>
+      <th style="padding:10px 12px;text-align:center;font-size:12px;width:120px">מחיר ₪</th>
     </tr>
   </thead>
   <tbody>${partsRows}</tbody>
@@ -886,15 +989,15 @@ ${d.notes ? `
 
 <!-- TOTALS -->
 <div style="display:flex;justify-content:flex-end;margin-bottom:20px">
-  <div style="width:260px">
+  <div style="width:280px">
     <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">
       <span>סכום לפני מע"מ</span><span>₪${d.total.toLocaleString()}</span>
     </div>
     <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">
       <span>מע"מ ${vatRate}%</span><span>₪${vat.toLocaleString()}</span>
     </div>
-    <div style="display:flex;justify-content:space-between;padding:10px 12px;background:#1a3a5c;color:#fff;border-radius:0 0 8px 8px;font-weight:800;font-size:16px">
-      <span>סה"כ לתשלום</span><span>₪${totalWithVat.toLocaleString()}</span>
+    <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px">
+      <span>סה"כ לתשלום</span><span style="color:#e8a020">₪${totalWithVat.toLocaleString()}</span>
     </div>
   </div>
 </div>
@@ -910,7 +1013,7 @@ ${d.notes ? `
   </div>
 </div>
 
-<script>setTimeout(()=>window.print(),600)<\/script>
+<scr` + `ipt>window.onload=function(){setTimeout(function(){window.print();},500);}<\/scr` + `ipt>
 </body></html>`;
 
   closeModal();
