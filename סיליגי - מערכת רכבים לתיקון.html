@@ -342,8 +342,27 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 </div>
 
 <div class="toast" id="toast"></div>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAcTrlO3wiTojCfUwEE3ZePpnVotppncxY",
+  authDomain: "silagi2000-a8d4a.firebaseapp.com",
+  databaseURL: "https://silagi2000-a8d4a-default-rtdb.firebaseio.com",
+  projectId: "silagi2000-a8d4a",
+  storageBucket: "silagi2000-a8d4a.firebasestorage.app",
+  messagingSenderId: "1049735219629",
+  appId: "1:1049735219629:web:da6f232ab635a8f66ef924"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.fbRepairs = { db, ref, onValue, set, update };
+window.dispatchEvent(new Event("fbRepairsReady"));
+</script>
+  <script>
 // ══════════════════════════════════════════════
 // DATA
 // ══════════════════════════════════════════════
@@ -426,25 +445,47 @@ const DEFAULT_PARTS = [
   {id:71, name:"עבודה", cost:null, minPrice:null, multiplier:null, price:250, notes:"לפי שעה"},
 ];
 
-let parts = JSON.parse(localStorage.getItem(PARTS_KEY) || 'null') || DEFAULT_PARTS;
-let orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+let parts = [...DEFAULT_PARTS];
+let orders = [];
 let currentOrderId = null;
 let currentOrderParts = [];
 let quoteData = null;
+function saveParts() {
+  if (!window.fbRepairs) return;
+  const { db, ref, set } = window.fbRepairs;
+  set(ref(db, 'repairsApp/parts'), parts);
+}
 
-function saveParts() { localStorage.setItem(PARTS_KEY, JSON.stringify(parts)); }
-function saveOrders() { localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); }
+function saveOrders() {
+  if (!window.fbRepairs) return;
+  const { db, ref, set } = window.fbRepairs;
+  set(ref(db, 'repairsApp/orders'), orders);
+}
+function savePriceHistory() {
+  if (!window.fbRepairs) return;
+  const { db, ref, set } = window.fbRepairs;
+  set(ref(db, 'repairsApp/priceHistory'), priceHistory);
+}
 
-let vatRate = parseFloat(localStorage.getItem(VAT_KEY) || '17');
-let priceHistory = JSON.parse(localStorage.getItem(PRICE_HISTORY_KEY) || '{}');
+function saveVatRemote() {
+  if (!window.fbRepairs) return;
+  const { db, ref, update } = window.fbRepairs;
+  update(ref(db, 'repairsApp/settings'), { vatRate });
+}
+
+let vatRate = 17;
+let priceHistory = {};
 
 function saveVat() {
   const val = parseFloat(document.getElementById('vatInput').value);
-  if (isNaN(val) || val < 0 || val > 100) { showToast('⚠️ ערך לא תקין'); return; }
+  if (isNaN(val) || val < 0 || val > 100) {
+    showToast('⚠️ ערך לא תקין');
+    return;
+  }
   vatRate = val;
-  localStorage.setItem(VAT_KEY, vatRate);
+  saveVatRemote();
   document.getElementById('vatModal').classList.remove('open');
-  showToast('✅ מע"מ עודכן ל-' + vatRate + '%');
+  showToast('✅ מע"מ עודכן ל ' + vatRate + '%');
 }
 
 function openVatModal() {
@@ -463,9 +504,8 @@ function recordPriceHistory(partId, oldPrice, newPrice) {
     fromPrice: oldPrice,
     toPrice: newPrice
   });
-  localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
+  savePriceHistory();
 }
-
 function showPriceHistory(partId, partName) {
   const body = document.getElementById('historyBody');
 
@@ -521,7 +561,7 @@ function showPriceHistory(partId, partName) {
 function deleteHistoryEntry(partId, idx) {
   if (!priceHistory[partId]) return;
   priceHistory[partId].splice(idx, 1);
-  localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
+savePriceHistory();
   showPriceHistory(window._currentHistoryPartId, window._currentHistoryPartName);
   renderCatalog();
   showToast('🗑 רשומה נמחקה');
@@ -825,7 +865,7 @@ function updatePartField(id, field, value) {
       fromPrice: oldPrice,
       toPrice: newPrice
     });
-    localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
+   savePriceHistory();
   }
   saveParts();
   renderCatalog(document.getElementById('catalogSearch')?.value || '');
@@ -1032,12 +1072,35 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
+function initFirebaseData() {
+  if (!window.fbRepairs) return;
 
+  const { db, ref, onValue } = window.fbRepairs;
+
+  onValue(ref(db, 'repairsApp'), snap => {
+    const data = snap.val() || {};
+
+    parts = data.parts || [...DEFAULT_PARTS];
+    orders = data.orders || [];
+    vatRate = data.settings && typeof data.settings.vatRate === 'number' ? data.settings.vatRate : 17;
+    priceHistory = data.priceHistory || {};
+
+    renderOrders();
+    renderCatalog(document.getElementById('catalogSearch')?.value || '');
+    renderPartsList();
+  });
+}
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
 renderOrders();
 document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+
+window.addEventListener('fbRepairsReady', initFirebaseData);
+
+if (window.fbRepairs) {
+  initFirebaseData();
+}
 </script>
 </body>
 </html>
