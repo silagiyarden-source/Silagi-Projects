@@ -23,78 +23,40 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); direction: rtl; min-height: 100vh; }
-
-/* ── HEADER ── */
-.header {
-  background: var(--primary);
-  padding: 0 24px;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 60px;
-  position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-}
+.header { background: var(--primary); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
 .header-logo { color: #fff; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
 .header-logo span { color: var(--accent); }
+.sync-indicator { font-size: 12px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 6px; }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #aaa; }
+.sync-dot.synced { background: var(--success); }
+.sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .header-nav { display: flex; gap: 4px; }
-.nav-btn {
-  background: none; border: none; color: rgba(255,255,255,0.7);
-  padding: 8px 16px; border-radius: 8px; cursor: pointer;
-  font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 500;
-  transition: all 0.2s;
-}
+.nav-btn { background: none; border: none; color: rgba(255,255,255,0.7); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 500; transition: all 0.2s; }
 .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.12); color: #fff; }
 .nav-btn.active { color: var(--accent); }
-
-/* ── VIEWS ── */
 .view { display: none; padding: 24px; max-width: 1100px; margin: 0 auto; }
 .view.active { display: block; }
-
-/* ── PAGE TITLE ── */
 .page-title { font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
 .page-title::after { content:''; flex:1; height:2px; background: linear-gradient(to left, transparent, var(--border)); }
-
-/* ── CARDS ── */
 .card { background: var(--card); border-radius: 14px; box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
 .card-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
-
-/* ── FORM ── */
 .field-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
 .field { display: flex; flex-direction: column; gap: 5px; }
 .field label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
-.field input, .field textarea, .field select {
-  border: 1.5px solid var(--border);
-  border-radius: 8px; padding: 9px 12px;
-  font-family: 'Heebo', sans-serif; font-size: 14px; color: var(--text);
-  background: #f8fafc; transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-}
-.field input:focus, .field textarea:focus, .field select:focus {
-  border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,58,92,0.08);
-  background: #fff;
-}
+.field input, .field textarea, .field select { border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 12px; font-family: 'Heebo', sans-serif; font-size: 14px; color: var(--text); background: #f8fafc; transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,58,92,0.08); background: #fff; }
 .field textarea { resize: vertical; min-height: 70px; }
 .field.full { grid-column: 1/-1; }
-
-/* ── PARTS SELECTOR ── */
 .parts-search-wrap { position: relative; margin-bottom: 12px; }
 .parts-search-wrap input { width: 100%; padding: 11px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Heebo',sans-serif; font-size: 15px; background: #f8fafc; outline: none; transition: all 0.2s; }
 .parts-search-wrap input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(26,58,92,0.08); }
-.parts-dropdown {
-  position: absolute; top: 100%; right: 0; left: 0; z-index: 50;
-  background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
-  box-shadow: var(--shadow-lg); max-height: 220px; overflow-y: auto;
-  display: none;
-}
+.parts-dropdown { position: absolute; top: 100%; right: 0; left: 0; z-index: 50; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; box-shadow: var(--shadow-lg); max-height: 220px; overflow-y: auto; display: none; }
 .parts-dropdown.open { display: block; }
-.part-option {
-  padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-  border-bottom: 1px solid #f0f4f8; font-size: 14px; transition: background 0.15s;
-}
+.part-option { padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f4f8; font-size: 14px; transition: background 0.15s; }
 .part-option:last-child { border-bottom: none; }
 .part-option:hover { background: #eef3f9; }
 .part-option .part-price { color: var(--accent-dark); font-weight: 700; font-size: 13px; }
-
-/* ── PARTS TABLE ── */
 .parts-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .parts-table th { background: #eef3f9; padding: 9px 12px; text-align: right; font-weight: 700; font-size: 12px; color: var(--primary); border-bottom: 2px solid var(--border); }
 .parts-table td { padding: 9px 12px; border-bottom: 1px solid #f0f4f8; vertical-align: middle; }
@@ -104,18 +66,10 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 .qty-input:focus { border-color: var(--primary); }
 .btn-remove { background: none; border: none; cursor: pointer; color: var(--danger); font-size: 18px; padding: 2px 6px; border-radius: 6px; transition: background 0.2s; }
 .btn-remove:hover { background: #fde8e8; }
-
-/* ── TOTAL ── */
-.total-bar {
-  background: var(--primary); color: #fff; border-radius: 12px;
-  padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
-  margin-top: 8px;
-}
+.total-bar { background: var(--primary); color: #fff; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
 .total-bar .total-label { font-size: 15px; font-weight: 600; opacity: 0.85; }
 .total-bar .total-amount { font-size: 26px; font-weight: 900; }
 .total-bar .total-amount span { font-size: 14px; font-weight: 400; opacity: 0.7; margin-right: 4px; }
-
-/* ── BUTTONS ── */
 .btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-family: 'Heebo',sans-serif; font-size: 14px; font-weight: 700; transition: all 0.2s; }
 .btn-primary { background: var(--primary); color: #fff; }
 .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: var(--shadow); }
@@ -126,14 +80,8 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 .btn-danger { background: var(--danger); color: #fff; }
 .btn-sm { padding: 7px 14px; font-size: 13px; }
 .actions-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-
-/* ── ORDERS LIST ── */
 .orders-grid { display: grid; gap: 12px; }
-.order-card {
-  background: var(--card); border-radius: 12px; box-shadow: var(--shadow);
-  padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
-  cursor: pointer; border: 2px solid transparent; transition: all 0.2s;
-}
+.order-card { background: var(--card); border-radius: 12px; box-shadow: var(--shadow); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
 .order-card:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow-lg); }
 .order-info { display: flex; flex-direction: column; gap: 4px; }
 .order-num { font-size: 13px; color: var(--text-muted); font-weight: 500; }
@@ -141,12 +89,9 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 .order-details { font-size: 13px; color: var(--text-muted); }
 .order-meta { text-align: left; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .order-total { font-size: 20px; font-weight: 900; color: var(--accent-dark); }
-.order-date { font-size: 12px; color: var(--text-muted); }
 .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
 .status-open { background: #e8f5e9; color: #27ae60; }
 .status-done { background: #eef3f9; color: var(--primary); }
-
-/* ── PARTS CATALOG ── */
 .catalog-search { width: 100%; padding: 11px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Heebo',sans-serif; font-size: 15px; background: #fff; outline: none; margin-bottom: 14px; }
 .catalog-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .catalog-table th { background: var(--primary); color: #fff; padding: 10px 14px; text-align: right; font-weight: 700; font-size: 13px; }
@@ -155,13 +100,9 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 .price-tag { font-weight: 700; color: var(--accent-dark); }
 .edit-inline { width: 100%; border: none; background: transparent; font-family: 'Heebo',sans-serif; font-size: 14px; color: var(--text); padding: 2px 4px; border-radius: 4px; }
 .edit-inline:focus { outline: 1.5px solid var(--primary); background: #fff; }
-
-/* ── EMPTY STATE ── */
 .empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); }
 .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
 .empty-state p { font-size: 15px; }
-
-/* ── MODAL ── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; padding: 20px; overflow-y: auto; }
 .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
 .modal { background: #fff; border-radius: 16px; width: 100%; max-width: 600px; box-shadow: var(--shadow-lg); overflow: hidden; margin: auto; }
@@ -170,32 +111,45 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 .modal-close { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; line-height: 1; }
 .modal-body { padding: 20px; }
 .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
-
-/* ── STATS BAR ── */
 .stats-bar { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
 .stat-card { background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 4px; }
 .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
 .stat-value { font-size: 24px; font-weight: 900; color: var(--primary); }
 .stat-value.accent { color: var(--accent-dark); }
-
-/* ── TOAST ── */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--primary); color: #fff; padding: 12px 24px; border-radius: 50px; font-size: 14px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.loading-overlay { position: fixed; inset: 0; background: rgba(26,58,92,0.85); z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.loading-overlay.hidden { display: none; }
+.loading-spinner { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: #fff; font-size: 16px; font-weight: 600; }
 </style>
 </head>
 <body>
 
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">מתחבר לשרת...</div>
+</div>
+
 <div class="header">
   <div class="header-logo">סילגי <span>2000</span> | קבלת רכבים לתיקון</div>
-  <div class="header-nav">
-    <button class="nav-btn active" onclick="showView('orders')">📋 הזמנות</button>
-    <button class="nav-btn" onclick="newOrder()">➕ חדשה</button>
-    <button class="nav-btn" onclick="showView('catalog')">🔩 מחירון</button>
-    <button class="nav-btn" onclick="openVatModal()">⚙️ הגדרות</button>
+  <div style="display:flex;align-items:center;gap:16px">
+    <div class="sync-indicator">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncText">מתחבר...</span>
+    </div>
+    <div class="header-nav">
+      <button class="nav-btn active" onclick="showView('orders')">📋 הזמנות</button>
+      <button class="nav-btn" onclick="newOrder()">➕ חדשה</button>
+      <button class="nav-btn" onclick="showView('catalog')">🔩 מחירון</button>
+      <button class="nav-btn" onclick="openVatModal()">⚙️ הגדרות</button>
+    </div>
   </div>
 </div>
 
-<!-- ═══ ORDERS LIST ═══ -->
+<!-- ORDERS LIST -->
 <div class="view active" id="view-orders">
   <div class="page-title">📋 הזמנות תיקון</div>
   <div class="stats-bar" id="statsBar"></div>
@@ -205,10 +159,9 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
   <div class="orders-grid" id="ordersList"></div>
 </div>
 
-<!-- ═══ NEW / EDIT ORDER ═══ -->
+<!-- NEW / EDIT ORDER -->
 <div class="view" id="view-new-order">
   <div class="page-title" id="formTitle">➕ הזמנת תיקון חדשה</div>
-
   <div class="card">
     <div class="card-title">👤 פרטי לקוח ורכב</div>
     <div class="field-grid">
@@ -221,45 +174,34 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
       <div class="field full"><label>תיאור העבודה / הערות</label><textarea id="f-notes" placeholder="פרט את העבודה הנדרשת..."></textarea></div>
     </div>
   </div>
-
   <div class="card">
     <div class="card-title">🔩 חלקים ועבודות</div>
     <div class="parts-search-wrap">
       <input type="text" id="partsSearch" placeholder="🔍 חפש חלק לפי שם..." autocomplete="off" oninput="searchParts(this.value)" onblur="setTimeout(()=>closeDropdown(),200)">
       <div class="parts-dropdown" id="partsDropdown"></div>
     </div>
-    <div id="partsContainer">
-      <table class="parts-table" id="partsTable" style="display:none">
-        <thead><tr>
-          <th>שם חלק</th>
-          <th style="width:90px">מחיר יח'</th>
-          <th style="width:70px">כמות</th>
-          <th style="width:90px">סה"כ</th>
-          <th style="width:40px"></th>
-        </tr></thead>
-        <tbody id="partsList"></tbody>
-      </table>
-      <div class="empty-state" id="partsEmpty">
-        <div class="icon">🔩</div>
-        <p>חפש וצרף חלקים לעבודה</p>
-      </div>
-    </div>
+    <table class="parts-table" id="partsTable" style="display:none">
+      <thead><tr>
+        <th>שם חלק</th><th style="width:90px">מחיר יח'</th><th style="width:70px">כמות</th><th style="width:90px">סה"כ</th><th style="width:40px"></th>
+      </tr></thead>
+      <tbody id="partsList"></tbody>
+    </table>
+    <div class="empty-state" id="partsEmpty"><div class="icon">🔩</div><p>חפש וצרף חלקים לעבודה</p></div>
     <div class="total-bar" id="totalBar" style="display:none">
       <div class="total-label">סה"כ לתשלום (לפני מע"מ)</div>
       <div class="total-amount"><span>₪</span><span id="totalAmount">0</span></div>
     </div>
   </div>
-
   <div class="actions-bar">
     <button class="btn btn-primary" onclick="saveOrder()">💾 שמור הזמנה</button>
     <button class="btn btn-accent" onclick="generateQuote()">📄 הצעת מחיר PDF</button>
     <button class="btn btn-outline" id="completeBtn" style="display:none" onclick="toggleOrderStatus()">✅ סמן כהושלמה</button>
     <button class="btn btn-outline" onclick="showView('orders')">✖ ביטול</button>
-    <button class="btn btn-danger btn-sm" id="deleteBtn" style="display:none; margin-right:auto" onclick="deleteCurrentOrder()">🗑 מחק</button>
+    <button class="btn btn-danger btn-sm" id="deleteBtn" style="display:none;margin-right:auto" onclick="deleteCurrentOrder()">🗑 מחק</button>
   </div>
 </div>
 
-<!-- ═══ PARTS CATALOG ═══ -->
+<!-- PARTS CATALOG -->
 <div class="view" id="view-catalog">
   <div class="page-title">🔩 מחירון חלקים</div>
   <div class="card">
@@ -287,13 +229,10 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
   </div>
 </div>
 
-<!-- ═══ VAT SETTINGS MODAL ═══ -->
+<!-- VAT MODAL -->
 <div class="modal-overlay" id="vatModal">
   <div class="modal" style="max-width:380px">
-    <div class="modal-header">
-      <h3>⚙️ הגדרות מערכת</h3>
-      <button class="modal-close" onclick="document.getElementById('vatModal').classList.remove('open')">×</button>
-    </div>
+    <div class="modal-header"><h3>⚙️ הגדרות מערכת</h3><button class="modal-close" onclick="document.getElementById('vatModal').classList.remove('open')">×</button></div>
     <div class="modal-body">
       <div class="field">
         <label>שיעור מע"מ (%)</label>
@@ -308,31 +247,23 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
   </div>
 </div>
 
-<!-- ═══ PRICE HISTORY MODAL ═══ -->
+<!-- PRICE HISTORY MODAL -->
 <div class="modal-overlay" id="historyModal">
-  <div class="modal" style="max-width:500px">
-    <div class="modal-header">
-      <h3>📈 היסטוריית מחירים</h3>
-      <button class="modal-close" onclick="document.getElementById('historyModal').classList.remove('open')">×</button>
-    </div>
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header"><h3>📈 היסטוריית מחירים</h3><button class="modal-close" onclick="document.getElementById('historyModal').classList.remove('open')">×</button></div>
     <div class="modal-body" id="historyBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="document.getElementById('historyModal').classList.remove('open')">סגור</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="document.getElementById('historyModal').classList.remove('open')">סגור</button></div>
   </div>
 </div>
 
-<!-- ═══ QUOTE MODAL (print) ═══ -->
+<!-- QUOTE MODAL -->
 <div class="modal-overlay" id="quoteModal">
   <div class="modal">
-    <div class="modal-header">
-      <h3>📄 הצעת מחיר מוכנה</h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body" style="text-align:center; padding: 30px 20px">
-      <div style="font-size:48px; margin-bottom:12px">✅</div>
-      <p style="font-size:16px; font-weight:600; margin-bottom:8px">הצעת המחיר מוכנה!</p>
-      <p style="color:var(--text-muted); font-size:14px">לחץ "הדפס / שמור PDF" כדי להוריד</p>
+    <div class="modal-header"><h3>📄 הצעת מחיר מוכנה</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="modal-body" style="text-align:center;padding:30px 20px">
+      <div style="font-size:48px;margin-bottom:12px">✅</div>
+      <p style="font-size:16px;font-weight:600;margin-bottom:8px">הצעת המחיר מוכנה!</p>
+      <p style="color:var(--text-muted);font-size:14px">לחץ "הדפס / שמור PDF" כדי להוריד</p>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal()">סגור</button>
@@ -343,15 +274,35 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 
 <div class="toast" id="toast"></div>
 
-<script>
-// ══════════════════════════════════════════════
-// DATA
-// ══════════════════════════════════════════════
-const PARTS_KEY = 'silagi_parts';
-const ORDERS_KEY = 'silagi_orders';
-const VAT_KEY = 'silagi_vat';
-const PRICE_HISTORY_KEY = 'silagi_price_history';
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
+// ── Firebase Config ──
+const firebaseConfig = {
+  apiKey: "AIzaSyAcTrlO3wiTojCfUwEE3ZePpnVotppncxY",
+  authDomain: "silagi2000-a8d4a.firebaseapp.com",
+  projectId: "silagi2000-a8d4a",
+  storageBucket: "silagi2000-a8d4a.firebasestorage.app",
+  messagingSenderId: "1049735219629",
+  appId: "1:1049735219629:web:da6f232ab635a8f66ef924"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ── Sync indicator ──
+function setSynced() {
+  document.getElementById('syncDot').className = 'sync-dot synced';
+  document.getElementById('syncText').textContent = 'מחובר ✓';
+}
+function setSyncing() {
+  document.getElementById('syncDot').className = 'sync-dot syncing';
+  document.getElementById('syncText').textContent = 'שומר...';
+}
+
+// ── Default Parts ──
 const DEFAULT_PARTS = [
   {id:1, name:"א.כ פח מידות 600-1000 מ''מ", cost:null, minPrice:1600, multiplier:null, price:1600, notes:"ללא התקנה וצבע"},
   {id:2, name:"סלסלה פח 600-1250 מ''מ", cost:null, minPrice:1350, multiplier:null, price:1350, notes:"ללא התקנה וצבע"},
@@ -426,118 +377,111 @@ const DEFAULT_PARTS = [
   {id:71, name:"עבודה", cost:null, minPrice:null, multiplier:null, price:250, notes:"לפי שעה"},
 ];
 
-let parts = JSON.parse(localStorage.getItem(PARTS_KEY) || 'null') || DEFAULT_PARTS;
-let orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+// ── State ──
+let parts = [];
+let orders = [];
+let priceHistory = {};
+let vatRate = 18;
 let currentOrderId = null;
 let currentOrderParts = [];
 let quoteData = null;
 
-function saveParts() { localStorage.setItem(PARTS_KEY, JSON.stringify(parts)); }
-function saveOrders() { localStorage.setItem(ORDERS_KEY, JSON.stringify(orders)); }
+// ── Firestore helpers ──
+async function fbSaveParts() {
+  setSyncing();
+  await setDoc(doc(db, 'settings', 'parts'), { list: parts });
+  await setDoc(doc(db, 'settings', 'priceHistory'), { data: JSON.stringify(priceHistory) });
+  setSynced();
+}
 
-let vatRate = parseFloat(localStorage.getItem(VAT_KEY) || '17');
-let priceHistory = JSON.parse(localStorage.getItem(PRICE_HISTORY_KEY) || '{}');
+async function fbSaveOrders() {
+  setSyncing();
+  // Save each order as its own doc
+  const order = orders[orders.length - 1];
+  if (order) await setDoc(doc(db, 'orders', order.id), order);
+  setSynced();
+}
 
-function saveVat() {
+async function fbSaveOrder(order) {
+  setSyncing();
+  await setDoc(doc(db, 'orders', order.id), order);
+  setSynced();
+}
+
+async function fbDeleteOrder(id) {
+  setSyncing();
+  await deleteDoc(doc(db, 'orders', id));
+  setSynced();
+}
+
+async function fbSaveVat(v) {
+  await setDoc(doc(db, 'settings', 'vat'), { rate: v });
+}
+
+// ── Load all data from Firestore ──
+async function loadAllData() {
+  try {
+    // Load VAT
+    const vatDoc = await getDoc(doc(db, 'settings', 'vat'));
+    if (vatDoc.exists()) vatRate = vatDoc.data().rate;
+
+    // Load Parts
+    const partsDoc = await getDoc(doc(db, 'settings', 'parts'));
+    if (partsDoc.exists() && partsDoc.data().list?.length > 0) {
+      parts = partsDoc.data().list;
+    } else {
+      parts = DEFAULT_PARTS;
+      await setDoc(doc(db, 'settings', 'parts'), { list: parts });
+    }
+
+    // Load Price History
+    const histDoc = await getDoc(doc(db, 'settings', 'priceHistory'));
+    if (histDoc.exists()) {
+      priceHistory = JSON.parse(histDoc.data().data || '{}');
+    }
+
+    // Load Orders (realtime)
+    onSnapshot(collection(db, 'orders'), (snap) => {
+      orders = snap.docs.map(d => d.data());
+      renderOrders();
+    });
+
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    setSynced();
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    renderOrders();
+  } catch(e) {
+    console.error(e);
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    document.getElementById('syncText').textContent = 'שגיאת חיבור';
+    showToast('⚠️ בעיה בחיבור ל-Firebase');
+  }
+}
+
+// ── VAT ──
+window.saveVat = async function() {
   const val = parseFloat(document.getElementById('vatInput').value);
   if (isNaN(val) || val < 0 || val > 100) { showToast('⚠️ ערך לא תקין'); return; }
   vatRate = val;
-  localStorage.setItem(VAT_KEY, vatRate);
+  await fbSaveVat(vatRate);
   document.getElementById('vatModal').classList.remove('open');
   showToast('✅ מע"מ עודכן ל-' + vatRate + '%');
-}
+};
 
-function openVatModal() {
+window.openVatModal = function() {
   document.getElementById('vatInput').value = vatRate;
   document.getElementById('vatModal').classList.add('open');
-}
+};
 
-function recordPriceHistory(partId, oldPrice, newPrice) {
-  if (oldPrice === newPrice) return;
-  const p = parts.find(x => x.id === partId);
-  if (!priceHistory[partId]) priceHistory[partId] = [];
-  priceHistory[partId].push({
-    date: new Date().toLocaleDateString('he-IL'),
-    fromCost: p ? p.cost : null,
-    toCost: p ? p.cost : null,
-    fromPrice: oldPrice,
-    toPrice: newPrice
-  });
-  localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
-}
-
-function showPriceHistory(partId, partName) {
-  const body = document.getElementById('historyBody');
-
-  function renderHistory() {
-    const h = priceHistory[partId] || [];
-    if (!h.length) {
-      body.innerHTML = `<div class="empty-state"><div class="icon">📈</div><p>אין היסטוריה עדיין לחלק זה</p></div>`;
-      return;
-    }
-    body.innerHTML = `
-      <div style="font-weight:700;font-size:15px;margin-bottom:14px;color:var(--primary)">${partName}</div>
-      <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
-        <thead><tr style="background:#eef3f9">
-          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">תאריך</th>
-          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">עלות ישנה</th>
-          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">עלות חדשה</th>
-          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">מחיר לקוח ישן</th>
-          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">מחיר לקוח חדש</th>
-          <th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">שינוי</th>
-          <th style="width:36px"></th>
-        </tr></thead>
-        <tbody>
-          ${h.map((entry, i) => {
-            const fp = entry.toPrice !== undefined ? entry.toPrice : entry.to;
-            const frp = entry.fromPrice !== undefined ? entry.fromPrice : entry.from;
-            const diff = fp - frp;
-            const pct = frp ? ((diff / frp) * 100).toFixed(1) : 0;
-            const color = diff > 0 ? '#27ae60' : '#e74c3c';
-            const arrow = diff > 0 ? '▲' : '▼';
-            return `<tr style="border-bottom:1px solid #f0f4f8">
-              <td style="padding:7px 10px">${entry.date}</td>
-              <td style="padding:7px 10px;color:#aaa;text-decoration:line-through">${entry.fromCost != null ? '₪'+entry.fromCost : '—'}</td>
-              <td style="padding:7px 10px;font-weight:600">${entry.toCost != null ? '₪'+entry.toCost : '—'}</td>
-              <td style="padding:7px 10px;color:#aaa;text-decoration:line-through">₪${frp.toLocaleString()}</td>
-              <td style="padding:7px 10px;font-weight:700">₪${fp.toLocaleString()}</td>
-              <td style="padding:7px 10px;font-weight:700;color:${color}">${arrow} ${Math.abs(diff).toLocaleString()} (${Math.abs(pct)}%)</td>
-              <td style="padding:7px 10px;text-align:center">
-                <button onclick="deleteHistoryEntry(${partId},${i})" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:18px;padding:2px 5px;border-radius:5px" onmouseover="this.style.background='#fde8e8'" onmouseout="this.style.background='none'">×</button>
-              </td>
-            </tr>`;
-          }).reverse().join('')}
-        </tbody>
-      </table></div>`;
-  }
-
-  window._currentHistoryPartId = partId;
-  window._currentHistoryPartName = partName;
-  renderHistory();
-  document.getElementById('historyModal').classList.add('open');
-}
-
-function deleteHistoryEntry(partId, idx) {
-  if (!priceHistory[partId]) return;
-  priceHistory[partId].splice(idx, 1);
-  localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
-  showPriceHistory(window._currentHistoryPartId, window._currentHistoryPartName);
-  renderCatalog();
-  showToast('🗑 רשומה נמחקה');
-}
-
-// ══════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════
-function newOrder() {
+// ── Navigation ──
+window.newOrder = function() {
   currentOrderId = null;
   resetForm();
   showView('new-order');
   document.querySelectorAll('.nav-btn')[1].classList.add('active');
-}
+};
 
-function showView(name) {
+window.showView = function(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
@@ -545,71 +489,50 @@ function showView(name) {
   document.querySelectorAll('.nav-btn')[idx]?.classList.add('active');
   if (name === 'orders') renderOrders();
   if (name === 'catalog') renderCatalog();
-}
+};
 
-// ══════════════════════════════════════════════
-// ORDERS LIST
-// ══════════════════════════════════════════════
+// ── Orders ──
 function renderOrders() {
   const list = document.getElementById('ordersList');
   const stats = document.getElementById('statsBar');
   const q = (document.getElementById('ordersSearch')?.value || '').trim().toLowerCase();
-
-  const totalRevenue = orders.reduce((s, o) => s + (o.total||0), 0);
+  const totalRevenue = orders.reduce((s,o) => s+(o.total||0), 0);
   const openCount = orders.filter(o=>o.status==='open').length;
   const doneCount = orders.filter(o=>o.status==='done').length;
-
   stats.innerHTML = `
     <div class="stat-card"><div class="stat-label">סה"כ הזמנות</div><div class="stat-value">${orders.length}</div></div>
     <div class="stat-card"><div class="stat-label">פתוחות</div><div class="stat-value" style="color:var(--success)">${openCount}</div></div>
     <div class="stat-card"><div class="stat-label">הושלמו</div><div class="stat-value" style="color:var(--primary)">${doneCount}</div></div>
-    <div class="stat-card"><div class="stat-label">סה"כ הכנסות</div><div class="stat-value accent">₪${totalRevenue.toLocaleString()}</div></div>
-  `;
-
-  if (!orders.length) {
-    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>אין הזמנות עדיין. לחץ "+ חדשה" ליצירת הזמנה ראשונה</p></div>';
-    return;
-  }
-
-  const filtered = q
-    ? orders.filter(o =>
-        (o.name||'').toLowerCase().includes(q) ||
-        (o.license||'').toLowerCase().includes(q) ||
-        (o.model||'').toLowerCase().includes(q))
-    : orders;
-
-  if (!filtered.length) {
-    list.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>לא נמצאו הזמנות לחיפוש זה</p></div>';
-    return;
-  }
-
-  list.innerHTML = [...filtered].reverse().map(o => `
+    <div class="stat-card"><div class="stat-label">סה"כ הכנסות</div><div class="stat-value accent">₪${totalRevenue.toLocaleString()}</div></div>`;
+  if (!orders.length) { list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>אין הזמנות עדיין</p></div>'; return; }
+  const filtered = q ? orders.filter(o=>(o.name||'').toLowerCase().includes(q)||(o.license||'').toLowerCase().includes(q)||(o.model||'').toLowerCase().includes(q)) : orders;
+  if (!filtered.length) { list.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>לא נמצאו הזמנות</p></div>'; return; }
+  list.innerHTML = [...filtered].sort((a,b)=>b.createdAt?.localeCompare(a.createdAt||'')).map(o => `
     <div class="order-card" onclick="editOrder('${o.id}')">
       <div class="order-info">
         <div class="order-num">הזמנה #${o.id.slice(-4)} · ${o.date||''}</div>
         <div class="order-name">${o.name}</div>
-        <div class="order-details">${[o.license, o.model].filter(Boolean).join(' · ')}</div>
+        <div class="order-details">${[o.license,o.model].filter(Boolean).join(' · ')}</div>
       </div>
       <div class="order-meta">
         <div class="order-total">₪${(o.total||0).toLocaleString()}</div>
         <span class="status-badge ${o.status==='open'?'status-open':'status-done'}">${o.status==='open'?'פתוחה':'הושלמה'}</span>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function editOrder(id) {
-  const order = orders.find(o => o.id === id);
+window.editOrder = function(id) {
+  const order = orders.find(o=>o.id===id);
   if (!order) return;
   currentOrderId = id;
-  currentOrderParts = JSON.parse(JSON.stringify(order.parts || []));
-  document.getElementById('f-name').value = order.name || '';
-  document.getElementById('f-phone').value = order.phone || '';
-  document.getElementById('f-license').value = order.license || '';
-  document.getElementById('f-chassis').value = order.chassis || '';
-  document.getElementById('f-model').value = order.model || '';
-  document.getElementById('f-date').value = order.date || '';
-  document.getElementById('f-notes').value = order.notes || '';
+  currentOrderParts = JSON.parse(JSON.stringify(order.parts||[]));
+  document.getElementById('f-name').value = order.name||'';
+  document.getElementById('f-phone').value = order.phone||'';
+  document.getElementById('f-license').value = order.license||'';
+  document.getElementById('f-chassis').value = order.chassis||'';
+  document.getElementById('f-model').value = order.model||'';
+  document.getElementById('f-date').value = order.date||'';
+  document.getElementById('f-notes').value = order.notes||'';
   document.getElementById('formTitle').textContent = `✏️ עריכת הזמנה #${id.slice(-4)}`;
   document.getElementById('deleteBtn').style.display = 'inline-flex';
   document.getElementById('completeBtn').style.display = 'inline-flex';
@@ -617,25 +540,19 @@ function editOrder(id) {
   renderPartsList();
   showView('new-order');
   document.querySelectorAll('.nav-btn')[1].classList.add('active');
-}
+};
 
 function resetForm() {
-  currentOrderId = null;
-  currentOrderParts = [];
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-phone').value = '';
-  document.getElementById('f-license').value = '';
-  document.getElementById('f-chassis').value = '';
-  document.getElementById('f-model').value = '';
+  currentOrderId = null; currentOrderParts = [];
+  ['f-name','f-phone','f-license','f-chassis','f-model','f-notes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('f-notes').value = '';
   document.getElementById('formTitle').textContent = '➕ הזמנת תיקון חדשה';
   document.getElementById('deleteBtn').style.display = 'none';
   document.getElementById('completeBtn').style.display = 'none';
   renderPartsList();
 }
 
-function saveOrder() {
+window.saveOrder = async function() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) { showToast('⚠️ יש להזין שם לקוח'); return; }
   const order = {
@@ -647,397 +564,243 @@ function saveOrder() {
     date: document.getElementById('f-date').value,
     notes: document.getElementById('f-notes').value,
     parts: currentOrderParts,
-    total: currentOrderParts.reduce((s,p) => s + p.price * p.qty, 0),
+    total: currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0),
     status: 'open',
     createdAt: new Date().toISOString()
   };
   if (currentOrderId) {
-    const idx = orders.findIndex(o => o.id === currentOrderId);
-    if (idx >= 0) { order.status = orders[idx].status; orders[idx] = order; }
-  } else {
-    orders.push(order);
-    currentOrderId = order.id;
-    document.getElementById('deleteBtn').style.display = 'inline-flex';
+    const existing = orders.find(o=>o.id===currentOrderId);
+    if (existing) order.status = existing.status;
   }
-  saveOrders();
+  currentOrderId = order.id;
+  document.getElementById('deleteBtn').style.display = 'inline-flex';
+  await fbSaveOrder(order);
   showToast('✅ הזמנה נשמרה!');
-}
+};
 
-function toggleOrderStatus() {
+window.toggleOrderStatus = async function() {
   if (!currentOrderId) return;
-  const order = orders.find(o => o.id === currentOrderId);
+  const order = orders.find(o=>o.id===currentOrderId);
   if (!order) return;
-  order.status = order.status === 'open' ? 'done' : 'open';
-  saveOrders();
+  order.status = order.status==='open'?'done':'open';
+  await fbSaveOrder(order);
   updateCompleteBtn(order.status);
-  showToast(order.status === 'done' ? '✅ הזמנה סומנה כהושלמה' : '🔓 הזמנה נפתחה מחדש');
-}
+  showToast(order.status==='done'?'✅ הזמנה סומנה כהושלמה':'🔓 הזמנה נפתחה מחדש');
+};
 
-function updateCompleteBtn(status) {
+window.updateCompleteBtn = function(status) {
   const btn = document.getElementById('completeBtn');
   if (!btn) return;
-  if (status === 'open') {
-    btn.textContent = '✅ סמן כהושלמה';
-    btn.style.borderColor = 'var(--success)';
-    btn.style.color = 'var(--success)';
-  } else {
-    btn.textContent = '🔓 פתח מחדש';
-    btn.style.borderColor = 'var(--accent-dark)';
-    btn.style.color = 'var(--accent-dark)';
-  }
-}
+  if (status==='open') { btn.textContent='✅ סמן כהושלמה'; btn.style.borderColor='var(--success)'; btn.style.color='var(--success)'; }
+  else { btn.textContent='🔓 פתח מחדש'; btn.style.borderColor='var(--accent-dark)'; btn.style.color='var(--accent-dark)'; }
+};
 
-function deleteCurrentOrder() {
+function updateCompleteBtn(s) { window.updateCompleteBtn(s); }
+
+window.deleteCurrentOrder = async function() {
   if (!currentOrderId) return;
   if (!confirm('למחוק הזמנה זו?')) return;
-  orders = orders.filter(o => o.id !== currentOrderId);
-  saveOrders();
+  await fbDeleteOrder(currentOrderId);
   showToast('🗑 הזמנה נמחקה');
   showView('orders');
+};
+
+// ── Parts Search ──
+function calcPrice(p) {
+  if (p.cost && p.multiplier) return Math.max(Math.round(p.cost*p.multiplier), p.minPrice||0);
+  return p.price||0;
 }
 
-// ══════════════════════════════════════════════
-// PARTS SEARCH & TABLE
-// ══════════════════════════════════════════════
-function searchParts(q) {
+window.searchParts = function(q) {
   const dd = document.getElementById('partsDropdown');
   if (!q.trim()) { dd.classList.remove('open'); return; }
-  const results = parts.filter(p => p.name.includes(q) || (p.notes||'').includes(q))
-    .sort((a, b) => a.name.localeCompare(b.name, 'he'))
-    .slice(0,10);
+  const results = parts.filter(p=>p.name.includes(q)||(p.notes||'').includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'he')).slice(0,10);
   if (!results.length) { dd.classList.remove('open'); return; }
-  dd.innerHTML = results.map(p => `
-    <div class="part-option" onmousedown="addPart(${p.id})">
-      <span>${p.name}</span>
-      <span class="part-price">${calcPrice(p) ? '₪'+calcPrice(p).toLocaleString() : '—'}</span>
-    </div>
-  `).join('');
+  dd.innerHTML = results.map(p=>`<div class="part-option" onmousedown="addPart(${p.id})"><span>${p.name}</span><span class="part-price">${calcPrice(p)?'₪'+calcPrice(p).toLocaleString():'—'}</span></div>`).join('');
   dd.classList.add('open');
-}
+};
 
-function closeDropdown() {
+window.closeDropdown = function() {
   document.getElementById('partsDropdown').classList.remove('open');
   document.getElementById('partsSearch').value = '';
-}
+};
 
-function addPart(partId) {
-  const part = parts.find(p => p.id === partId);
+window.addPart = function(partId) {
+  const part = parts.find(p=>p.id===partId);
   if (!part) return;
-  const existing = currentOrderParts.find(p => p.partId === partId);
-  if (existing) { existing.qty++; }
-  else { currentOrderParts.push({ partId, name: part.name, price: calcPrice(part), qty: 1 }); }
+  const existing = currentOrderParts.find(p=>p.partId===partId);
+  if (existing) existing.qty++;
+  else currentOrderParts.push({partId, name:part.name, price:calcPrice(part), qty:1});
   renderPartsList();
-  closeDropdown();
-}
+  window.closeDropdown();
+};
 
-function removePart(idx) {
-  currentOrderParts.splice(idx, 1);
-  renderPartsList();
-}
-
-function updateQty(idx, val) {
-  const q = parseInt(val) || 1;
-  currentOrderParts[idx].qty = Math.max(1, q);
-  updateTotal();
-}
+window.removePart = function(idx) { currentOrderParts.splice(idx,1); renderPartsList(); };
+window.updateQty = function(idx,val) { currentOrderParts[idx].qty=Math.max(1,parseInt(val)||1); updateTotal(); };
 
 function renderPartsList() {
-  const tbody = document.getElementById('partsList');
-  const table = document.getElementById('partsTable');
-  const empty = document.getElementById('partsEmpty');
-  const totalBar = document.getElementById('totalBar');
-
-  if (!currentOrderParts.length) {
-    table.style.display = 'none';
-    empty.style.display = 'block';
-    totalBar.style.display = 'none';
-    return;
-  }
-  table.style.display = 'table';
-  empty.style.display = 'none';
-  totalBar.style.display = 'flex';
-
-  tbody.innerHTML = currentOrderParts.map((p, i) => `
-    <tr>
-      <td>${p.name}</td>
-      <td class="price-tag">₪${p.price.toLocaleString()}</td>
-      <td><input class="qty-input" type="number" min="1" value="${p.qty}" onchange="updateQty(${i}, this.value)"></td>
-      <td class="price-tag">₪${(p.price * p.qty).toLocaleString()}</td>
-      <td><button class="btn-remove" onclick="removePart(${i})">×</button></td>
-    </tr>
-  `).join('');
+  const tbody=document.getElementById('partsList'), table=document.getElementById('partsTable'), empty=document.getElementById('partsEmpty'), bar=document.getElementById('totalBar');
+  if (!currentOrderParts.length) { table.style.display='none'; empty.style.display='block'; bar.style.display='none'; return; }
+  table.style.display='table'; empty.style.display='none'; bar.style.display='flex';
+  tbody.innerHTML = currentOrderParts.map((p,i)=>`<tr><td>${p.name}</td><td class="price-tag">₪${p.price.toLocaleString()}</td><td><input class="qty-input" type="number" min="1" value="${p.qty}" onchange="updateQty(${i},this.value)"></td><td class="price-tag">₪${(p.price*p.qty).toLocaleString()}</td><td><button class="btn-remove" onclick="removePart(${i})">×</button></td></tr>`).join('');
   updateTotal();
 }
 
 function updateTotal() {
-  const total = currentOrderParts.reduce((s,p) => s + p.price * p.qty, 0);
-  document.getElementById('totalAmount').textContent = total.toLocaleString();
+  document.getElementById('totalAmount').textContent = currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0).toLocaleString();
 }
 
-// ══════════════════════════════════════════════
-// CATALOG
-// ══════════════════════════════════════════════
-function calcPrice(p) {
-  // price = MAX(cost * multiplier, minPrice) - can only go up
-  if (p.cost && p.multiplier) {
-    const calc = Math.round(p.cost * p.multiplier);
-    return Math.max(calc, p.minPrice || 0);
-  }
-  return p.price || 0;
-}
-
-function renderCatalog(q = '') {
-  const filtered = (q ? parts.filter(p => p.name.includes(q)) : [...parts])
-    .sort((a, b) => a.name.localeCompare(b.name, 'he'));
-  document.getElementById('catalogBody').innerHTML = filtered.map((p) => {
-    const calcP = calcPrice(p);
-    const isCalc = p.cost && p.multiplier;
-    const priceColor = isCalc ? 'color:#1a3a5c;font-weight:700' : 'color:var(--accent-dark);font-weight:700';
+// ── Catalog ──
+function renderCatalog(q='') {
+  const filtered = (q?parts.filter(p=>p.name.includes(q)):[...parts]).sort((a,b)=>a.name.localeCompare(b.name,'he'));
+  document.getElementById('catalogBody').innerHTML = filtered.map(p => {
+    const calcP=calcPrice(p), isCalc=p.cost&&p.multiplier;
     return `<tr>
       <td><input class="edit-inline" value="${p.name}" onchange="updatePartField(${p.id},'name',this.value)"></td>
       <td><input class="edit-inline" type="number" placeholder="—" value="${p.cost||''}" onchange="updatePartField(${p.id},'cost',this.value?+this.value:null)" style="color:#888"></td>
       <td><input class="edit-inline" type="number" placeholder="—" step="0.001" value="${p.multiplier||''}" onchange="updatePartField(${p.id},'multiplier',this.value?+this.value:null)" style="color:#888"></td>
       <td><input class="edit-inline" type="number" placeholder="—" value="${p.minPrice||''}" onchange="updatePartField(${p.id},'minPrice',this.value?+this.value:null)" style="color:#888"></td>
-      <td style="${priceColor}">${calcP ? '₪'+calcP.toLocaleString() : '—'}${isCalc?'<span style="font-size:10px;color:#aaa;display:block">אוטומטי</span>':''}</td>
+      <td style="${isCalc?'color:#1a3a5c':'color:var(--accent-dark)'};font-weight:700">${calcP?'₪'+calcP.toLocaleString():'—'}${isCalc?'<span style="font-size:10px;color:#aaa;display:block">אוטומטי</span>':''}</td>
       <td><input class="edit-inline" value="${p.notes||''}" onchange="updatePartField(${p.id},'notes',this.value)"></td>
-      <td style="text-align:center">
-        <button class="btn btn-sm btn-outline" onclick="showPriceHistory(${p.id},'${p.name.replace(/'/g,'').replace(/"/g,'')}')" style="padding:4px 8px;font-size:13px">${(priceHistory[p.id]||[]).length > 0 ? '📈' : '—'}</button>
-      </td>
+      <td style="text-align:center"><button class="btn btn-sm btn-outline" onclick="showPriceHistory(${p.id},'${p.name.replace(/'/g,'').replace(/"/g,'')}')" style="padding:4px 8px;font-size:13px">${(priceHistory[p.id]||[]).length>0?'📈':'—'}</button></td>
       <td><button class="btn-remove" onclick="deletePart(${p.id})">×</button></td>
     </tr>`;
   }).join('');
 }
 
-function updatePartField(id, field, value) {
-  const p = parts.find(p => p.id === id);
+window.updatePartField = async function(id, field, value) {
+  const p = parts.find(p=>p.id===id);
   if (!p) return;
-  const oldPrice = calcPrice(p);
-  const oldCost = p.cost;
-  p[field] = value;
-  const newPrice = calcPrice(p);
-  if (newPrice > 0) p.price = newPrice;
-  if ((field === 'cost' || field === 'multiplier' || field === 'minPrice') && oldPrice !== newPrice && oldPrice > 0 && newPrice > 0) {
-    if (!priceHistory[id]) priceHistory[id] = [];
-    priceHistory[id].push({
-      date: new Date().toLocaleDateString('he-IL'),
-      fromCost: field === 'cost' ? oldCost : p.cost,
-      toCost: p.cost,
-      fromPrice: oldPrice,
-      toPrice: newPrice
-    });
-    localStorage.setItem(PRICE_HISTORY_KEY, JSON.stringify(priceHistory));
+  const oldPrice=calcPrice(p), oldCost=p.cost;
+  p[field]=value;
+  const newPrice=calcPrice(p);
+  if (newPrice>0) p.price=newPrice;
+  if ((field==='cost'||field==='multiplier'||field==='minPrice')&&oldPrice!==newPrice&&oldPrice>0&&newPrice>0) {
+    if (!priceHistory[id]) priceHistory[id]=[];
+    priceHistory[id].push({ date:new Date().toLocaleDateString('he-IL'), fromCost:field==='cost'?oldCost:p.cost, toCost:p.cost, fromPrice:oldPrice, toPrice:newPrice });
   }
-  saveParts();
-  renderCatalog(document.getElementById('catalogSearch')?.value || '');
-}
+  await fbSaveParts();
+  renderCatalog(document.getElementById('catalogSearch')?.value||'');
+};
 
-function exportToExcel() {
-  // Build CSV with BOM for Hebrew support in Excel
-  const bom = '\uFEFF';
-  const headers = ['שם פריט', 'עלות סילגי', 'מחיר מינימלי', 'מחיר ללקוח', 'מקדם', 'הערות'];
-  const rows = parts.map(p => {
-    const price = calcPrice(p) || p.price || '';
-    return [
-      `"${(p.name||'').replace(/"/g,'""')}"`,
-      p.cost != null ? p.cost : '',
-      p.minPrice != null ? p.minPrice : '',
-      price,
-      p.multiplier != null ? p.multiplier : '',
-      `"${(p.notes||'').replace(/"/g,'""')}"`
-    ].join(',');
-  });
-  const csv = bom + headers.join(',') + '\n' + rows.join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'מחירון_סילגי_' + new Date().toLocaleDateString('he-IL').replace(/\./g,'-') + '.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('✅ קובץ אקסל הורד!');
-}
-
-function deletePart(id) {
+window.deletePart = async function(id) {
   if (!confirm('למחוק חלק זה?')) return;
-  parts = parts.filter(p => p.id !== id);
-  saveParts();
+  parts=parts.filter(p=>p.id!==id);
+  await fbSaveParts();
   renderCatalog();
   showToast('🗑 חלק נמחק');
-}
+};
 
-function addNewPart() {
-  const name = prompt('שם החלק:');
+window.addNewPart = async function() {
+  const name=prompt('שם החלק:');
   if (!name) return;
-  const priceStr = prompt('מחיר (₪):');
-  const price = parseFloat(priceStr) || 0;
-  const newId = Math.max(...parts.map(p=>p.id), 0) + 1;
-  parts.push({ id: newId, name, price, notes: '' });
-  saveParts();
+  const price=parseFloat(prompt('מחיר (₪):')||'0')||0;
+  parts.push({id:Math.max(...parts.map(p=>p.id),0)+1, name, price, cost:null, minPrice:null, multiplier:null, notes:''});
+  await fbSaveParts();
   renderCatalog();
   showToast('✅ חלק נוסף!');
-}
+};
 
-// ══════════════════════════════════════════════
-// QUOTE PDF
-// ══════════════════════════════════════════════
-function generateQuote() {
-  const name = document.getElementById('f-name').value.trim();
+window.exportToExcel = function() {
+  const bom='\uFEFF', headers=['שם פריט','עלות סילגי','מחיר מינימלי','מחיר ללקוח','מקדם','הערות'];
+  const rows=parts.map(p=>[`"${(p.name||'').replace(/"/g,'""')}"`,p.cost??'',p.minPrice??'',calcPrice(p)||p.price||'',p.multiplier??'',`"${(p.notes||'').replace(/"/g,'""')}"`].join(','));
+  const blob=new Blob([bom+headers.join(',')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='מחירון_סילגי_'+new Date().toLocaleDateString('he-IL').replace(/\./g,'-')+'.csv';
+  a.click(); showToast('✅ קובץ אקסל הורד!');
+};
+
+// ── Price History ──
+window.showPriceHistory = function(partId, partName) {
+  const body=document.getElementById('historyBody');
+  function render() {
+    const h=priceHistory[partId]||[];
+    if (!h.length) { body.innerHTML='<div class="empty-state"><div class="icon">📈</div><p>אין היסטוריה עדיין</p></div>'; return; }
+    body.innerHTML=`<div style="font-weight:700;font-size:15px;margin-bottom:14px;color:var(--primary)">${partName}</div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#eef3f9"><th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">תאריך</th><th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">עלות ישנה</th><th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">עלות חדשה</th><th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">מחיר לקוח ישן</th><th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">מחיר לקוח חדש</th><th style="padding:8px 10px;text-align:right;font-weight:700;color:var(--primary)">שינוי</th><th style="width:36px"></th></tr></thead><tbody>${h.map((e,i)=>{const fp=e.toPrice||e.to,frp=e.fromPrice||e.from,diff=fp-frp,pct=frp?((diff/frp)*100).toFixed(1):0,color=diff>0?'#27ae60':'#e74c3c',arrow=diff>0?'▲':'▼';return`<tr style="border-bottom:1px solid #f0f4f8"><td style="padding:7px 10px">${e.date}</td><td style="padding:7px 10px;color:#aaa;text-decoration:line-through">${e.fromCost!=null?'₪'+e.fromCost:'—'}</td><td style="padding:7px 10px;font-weight:600">${e.toCost!=null?'₪'+e.toCost:'—'}</td><td style="padding:7px 10px;color:#aaa;text-decoration:line-through">₪${frp.toLocaleString()}</td><td style="padding:7px 10px;font-weight:700">₪${fp.toLocaleString()}</td><td style="padding:7px 10px;font-weight:700;color:${color}">${arrow} ${Math.abs(diff).toLocaleString()} (${Math.abs(pct)}%)</td><td style="padding:7px 10px;text-align:center"><button onclick="deleteHistoryEntry(${partId},${i})" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:18px;padding:2px 5px;border-radius:5px">×</button></td></tr>`;}).reverse().join('')}</tbody></table></div>`;
+  }
+  window._histPartId=partId; window._histPartName=partName;
+  render(); document.getElementById('historyModal').classList.add('open');
+};
+
+window.deleteHistoryEntry = async function(partId, idx) {
+  if (!priceHistory[partId]) return;
+  priceHistory[partId].splice(idx,1);
+  await fbSaveParts();
+  window.showPriceHistory(window._histPartId, window._histPartName);
+  renderCatalog(); showToast('🗑 רשומה נמחקה');
+};
+
+// ── Quote PDF ──
+window.generateQuote = function() {
+  const name=document.getElementById('f-name').value.trim();
   if (!name) { showToast('⚠️ יש להזין שם לקוח'); return; }
-  quoteData = {
-    name, phone: document.getElementById('f-phone').value,
-    license: document.getElementById('f-license').value,
-    chassis: document.getElementById('f-chassis').value,
-    model: document.getElementById('f-model').value,
-    date: document.getElementById('f-date').value,
-    notes: document.getElementById('f-notes').value,
-    parts: currentOrderParts,
-    total: currentOrderParts.reduce((s,p) => s + p.price * p.qty, 0),
-    quoteNum: 'SQ-' + Date.now().toString().slice(-5)
+  quoteData={
+    name, phone:document.getElementById('f-phone').value,
+    license:document.getElementById('f-license').value,
+    chassis:document.getElementById('f-chassis').value,
+    model:document.getElementById('f-model').value,
+    date:document.getElementById('f-date').value,
+    notes:document.getElementById('f-notes').value,
+    parts:currentOrderParts,
+    total:currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0),
+    quoteNum:'SQ-'+Date.now().toString().slice(-5)
   };
   document.getElementById('quoteModal').classList.add('open');
-}
+};
 
-function closeModal() {
-  document.getElementById('quoteModal').classList.remove('open');
-}
+window.closeModal = function() { document.getElementById('quoteModal').classList.remove('open'); };
 
-function printQuote() {
+window.printQuote = function() {
   if (!quoteData) return;
-  const d = quoteData;
-  const vat = Math.round(d.total * (vatRate / 100));
-  const totalWithVat = d.total + vat;
-  const dateStr = d.date ? d.date.split('-').reverse().join('.') : new Date().toLocaleDateString('he-IL');
+  const d=quoteData, vat=Math.round(d.total*(vatRate/100)), totalWithVat=d.total+vat;
+  const dateStr=d.date?d.date.split('-').reverse().join('.'):new Date().toLocaleDateString('he-IL');
+  const regularParts=d.parts.filter(p=>p.name!=='עבודה'&&p.name!=='עבודת כושר / שעת עבודה');
+  const laborParts=d.parts.filter(p=>p.name==='עבודה'||p.name==='עבודת כושר / שעת עבודה');
+  const regularRows=regularParts.map((p,i)=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${i+1}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${p.name}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">${p.qty}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;font-weight:700">₪${(p.price*p.qty).toLocaleString()}</td></tr>`).join('');
+  const laborTotal=laborParts.reduce((s,p)=>s+p.price*p.qty,0);
+  const laborRow=laborParts.length?`<tr style="background:#f4f7fb"><td colspan="3" style="padding:10px 12px;border-top:2px solid #1a3a5c;font-weight:700;font-size:14px;color:#1a3a5c">עבודה</td><td style="padding:10px 12px;border-top:2px solid #1a3a5c;text-align:center;font-weight:800;font-size:15px;color:#1a3a5c">₪${laborTotal.toLocaleString()}</td></tr>`:'';
 
-  const regularParts = d.parts.filter(p => p.name !== 'עבודה');
-  const laborParts = d.parts.filter(p => p.name === 'עבודה');
-
-  const regularRows = regularParts.map((p,i) => `
-    <tr>
-      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${i+1}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${p.name}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">${p.qty}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;font-weight:700">₪${(p.price*p.qty).toLocaleString()}</td>
-    </tr>`).join('');
-
-  const laborTotal = laborParts.reduce((s,p) => s + p.price * p.qty, 0);
-  const laborRow = laborParts.length ? `
-    <tr style="background:#f4f7fb">
-      <td colspan="3" style="padding:10px 12px;border-top:2px solid #1a3a5c;font-weight:700;font-size:14px;color:#1a3a5c">עבודה</td>
-      <td style="padding:10px 12px;border-top:2px solid #1a3a5c;text-align:center;font-weight:800;font-size:15px;color:#1a3a5c">₪${laborTotal.toLocaleString()}</td>
-    </tr>` : '';
-
-  const partsRows = regularRows + laborRow;
-
-  const html = `<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8">
-<title>הצעת מחיר – ${d.name}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl;padding:20px 24px;font-size:13px}
-  @page{margin:8mm;size:A4}
-  @media print{body{padding:0}}
-</style>
-</head><body>
-
-<!-- HEADER -->
+  const html=`<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>הצעת מחיר – ${d.name}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl;padding:20px 24px;font-size:13px}@page{margin:8mm;size:A4}@media print{body{padding:0}}</style></head><body>
 <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #1a3a5c;padding-bottom:14px;margin-bottom:16px">
-  <div>
-    <div style="font-size:26px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div>
-    <div style="font-size:12px;color:#888;margin-top:3px">יצור מרכבים למשאיות</div>
-    <div style="font-size:11px;color:#999;margin-top:6px">רח' הקידמה 16, א.ת. צפוני, אשדוד | 08-9400967 | office@silagi.co.il</div>
-  </div>
-  <div style="text-align:left">
-    <div style="background:#e8a020;color:#1a3a5c;padding:6px 16px;border-radius:6px;font-size:15px;font-weight:900;margin-bottom:8px">הצעת מחיר</div>
-    <div style="font-size:12px;color:#888">מספר: <b style="color:#1a3a5c">${d.quoteNum}</b></div>
-    <div style="font-size:12px;color:#888;margin-top:3px">תאריך: <b style="color:#1a3a5c">${dateStr}</b></div>
-  </div>
+  <div><div style="font-size:26px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div><div style="font-size:12px;color:#888;margin-top:3px">יצור מרכבים למשאיות</div><div style="font-size:11px;color:#999;margin-top:6px">רח' הקידמה 16, א.ת. צפוני, אשדוד | 08-9400967 | office@silagi.co.il</div></div>
+  <div style="text-align:left"><div style="background:#e8a020;color:#1a3a5c;padding:6px 16px;border-radius:6px;font-size:15px;font-weight:900;margin-bottom:8px">הצעת מחיר</div><div style="font-size:12px;color:#888">מספר: <b style="color:#1a3a5c">${d.quoteNum}</b></div><div style="font-size:12px;color:#888;margin-top:3px">תאריך: <b style="color:#1a3a5c">${dateStr}</b></div></div>
 </div>
-
-<!-- CLIENT INFO -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:16px;border:1px solid #ddd;border-radius:8px;overflow:hidden">
-  <div style="padding:10px 14px;border-left:1px solid #ddd;background:#f8fafc">
-    <div style="font-size:10px;color:#888;margin-bottom:3px">לכבוד</div>
-    <div style="font-size:18px;font-weight:800;color:#1a3a5c">${d.name}</div>
-    ${d.phone ? `<div style="font-size:13px;color:#555;margin-top:2px">📞 ${d.phone}</div>` : ''}
-  </div>
-  <div style="padding:10px 14px;background:#f8fafc">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">
-      ${d.license ? `<div><span style="color:#888;font-size:10px;display:block">רישוי</span><b>${d.license}</b></div>` : ''}
-      ${d.chassis ? `<div><span style="color:#888;font-size:10px;display:block">שלדה</span><b>${d.chassis}</b></div>` : ''}
-      ${d.model ? `<div><span style="color:#888;font-size:10px;display:block">דגם</span><b>${d.model}</b></div>` : ''}
-    </div>
-  </div>
+  <div style="padding:10px 14px;border-left:1px solid #ddd;background:#f8fafc"><div style="font-size:10px;color:#888;margin-bottom:3px">לכבוד</div><div style="font-size:18px;font-weight:800;color:#1a3a5c">${d.name}</div>${d.phone?`<div style="font-size:13px;color:#555;margin-top:2px">📞 ${d.phone}</div>`:''}</div>
+  <div style="padding:10px 14px;background:#f8fafc"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">${d.license?`<div><span style="color:#888;font-size:10px;display:block">רישוי</span><b>${d.license}</b></div>`:''} ${d.chassis?`<div><span style="color:#888;font-size:10px;display:block">שלדה</span><b>${d.chassis}</b></div>`:''} ${d.model?`<div><span style="color:#888;font-size:10px;display:block">דגם</span><b>${d.model}</b></div>`:''}</div></div>
 </div>
-
-${d.notes ? `
-<div style="background:#fffbf0;border:1px solid #f0d080;border-radius:8px;padding:10px 14px;margin-bottom:16px">
-  <div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:700">תיאור העבודה</div>
-  <div style="font-size:13px;line-height:1.5">${d.notes}</div>
-</div>` : ''}
-
-<!-- PARTS TABLE -->
+${d.notes?`<div style="background:#fffbf0;border:1px solid #f0d080;border-radius:8px;padding:10px 14px;margin-bottom:16px"><div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:700">תיאור העבודה</div><div style="font-size:13px;line-height:1.5">${d.notes}</div></div>`:''}
 <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
-  <thead>
-    <tr style="background:#1a3a5c;color:#fff">
-      <th style="padding:10px 12px;text-align:right;font-size:12px;width:40px">#</th>
-      <th style="padding:10px 12px;text-align:right;font-size:12px">תיאור חלק / עבודה</th>
-      <th style="padding:10px 12px;text-align:center;font-size:12px;width:60px">כמות</th>
-      <th style="padding:10px 12px;text-align:center;font-size:12px;width:120px">מחיר ₪</th>
-    </tr>
-  </thead>
-  <tbody>${partsRows}</tbody>
+  <thead><tr style="background:#1a3a5c;color:#fff"><th style="padding:10px 12px;text-align:right;font-size:12px;width:40px">#</th><th style="padding:10px 12px;text-align:right;font-size:12px">תיאור חלק / עבודה</th><th style="padding:10px 12px;text-align:center;font-size:12px;width:60px">כמות</th><th style="padding:10px 12px;text-align:center;font-size:12px;width:120px">מחיר ₪</th></tr></thead>
+  <tbody>${regularRows}${laborRow}</tbody>
 </table>
-
-<!-- TOTALS -->
-<div style="display:flex;justify-content:flex-end;margin-bottom:20px">
-  <div style="width:280px">
-    <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">
-      <span>סכום לפני מע"מ</span><span>₪${d.total.toLocaleString()}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px">
-      <span>מע"מ ${vatRate}%</span><span>₪${vat.toLocaleString()}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px">
-      <span>סה"כ לתשלום</span><span style="color:#e8a020">₪${totalWithVat.toLocaleString()}</span>
-    </div>
-  </div>
+<div style="display:flex;justify-content:flex-end;margin-bottom:20px"><div style="width:280px">
+  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>סכום לפני מע"מ</span><span>₪${d.total.toLocaleString()}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>מע"מ ${vatRate}%</span><span>₪${vat.toLocaleString()}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px"><span>סה"כ לתשלום</span><span style="color:#e8a020">₪${totalWithVat.toLocaleString()}</span></div>
+</div></div>
+<div style="margin-top:40px;border-top:2px solid #1a3a5c;padding-top:20px;display:flex;justify-content:space-between;align-items:flex-end">
+  <div style="font-size:11px;color:#888">הצעה זו בתוקף ל-30 יום</div>
+  <div style="text-align:center"><div style="font-size:15px;font-weight:700;color:#1a3a5c;margin-bottom:30px">חתימה ואישור לקוח</div><div style="border-bottom:2px solid #1a3a5c;width:220px;margin:0 auto"></div><div style="font-size:12px;color:#888;margin-top:6px">שם ותאריך</div></div>
 </div>
-
-<!-- FOOTER -->
-<div style="border-top:2px solid #eee;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
-  <div>
-    <div style="font-size:11px;color:#888;margin-bottom:4px">הצעה זו בתוקף ל-30 יום</div>
-    <div style="font-size:11px;color:#888">המחירים אינם כוללים מע"מ אלא אם צוין אחרת</div>
-  </div>
-  <div style="text-align:left">
-    <div style="font-size:12px;color:#888;margin-bottom:20px">חתימה ואישור לקוח: ___________________</div>
-  </div>
-</div>
-
 <scr` + `ipt>window.onload=function(){setTimeout(function(){window.print();},500);}<\/scr` + `ipt>
 </body></html>`;
 
-  closeModal();
-  const w = window.open('','_blank');
-  w.document.write(html);
-  w.document.close();
-  w.focus();
-}
+  window.closeModal();
+  const w=window.open('','_blank');
+  w.document.write(html); w.document.close(); w.focus();
+};
 
-// ══════════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════════
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
+// ── Toast ──
+window.showToast = function(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+};
+function showToast(msg) { window.showToast(msg); }
 
-// ══════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════
-renderOrders();
-document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+// ── Init ──
+loadAllData();
 </script>
 </body>
 </html>
