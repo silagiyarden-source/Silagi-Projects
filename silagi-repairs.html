@@ -258,16 +258,24 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 
 <!-- QUOTE MODAL -->
 <div class="modal-overlay" id="quoteModal">
-  <div class="modal">
-    <div class="modal-header"><h3>📄 הצעת מחיר מוכנה</h3><button class="modal-close" onclick="closeModal()">×</button></div>
-    <div class="modal-body" style="text-align:center;padding:30px 20px">
-      <div style="font-size:48px;margin-bottom:12px">✅</div>
-      <p style="font-size:16px;font-weight:600;margin-bottom:8px">הצעת המחיר מוכנה!</p>
-      <p style="color:var(--text-muted);font-size:14px">לחץ "הדפס / שמור PDF" כדי להוריד</p>
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header"><h3>📄 הצעת מחיר</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="modal-body" style="padding:24px 20px">
+      <div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border)">⚙️ אפשרויות הצעה</div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:5px">הנחה (%)</label>
+        <input id="quoteDiscount" type="number" min="0" max="100" step="0.5" placeholder="0" style="font-size:16px;font-weight:700;text-align:center;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Heebo',sans-serif;outline:none;background:#f8fafc;width:100%" oninput="updateQuotePreview()">
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:5px">תוספת מחיר ידנית (₪) – תתווסף לסה"כ</label>
+        <input id="quoteManualExtra" type="number" min="0" step="1" placeholder="0" style="font-size:16px;font-weight:700;text-align:center;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Heebo',sans-serif;outline:none;background:#f8fafc;width:100%" oninput="updateQuotePreview()">
+      </div>
+      <div id="quotePreview" style="background:var(--bg);border-radius:10px;padding:14px 16px;font-size:14px;margin-bottom:4px"></div>
     </div>
-    <div class="modal-footer">
+    <div class="modal-footer" style="flex-wrap:wrap;gap:8px">
       <button class="btn btn-outline" onclick="closeModal()">סגור</button>
-      <button class="btn btn-accent" onclick="printQuote()">🖨️ הדפס / שמור PDF</button>
+      <button class="btn btn-outline" onclick="printQuote('internal')" style="border-color:var(--primary);color:var(--primary)">📋 פירוט פנימי</button>
+      <button class="btn btn-accent" onclick="printQuote('client')">🖨️ הצעה ללקוח</button>
     </div>
   </div>
 </div>
@@ -614,7 +622,8 @@ function calcPrice(p) {
 window.searchParts = function(q) {
   const dd = document.getElementById('partsDropdown');
   if (!q.trim()) { dd.classList.remove('open'); return; }
-  const results = parts.filter(p=>p.name.includes(q)||(p.notes||'').includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'he')).slice(0,10);
+  const ql=q.toLowerCase();
+  const results = parts.filter(p=>p.name.toLowerCase().includes(ql)||(p.notes||'').toLowerCase().includes(ql)).sort((a,b)=>a.name.localeCompare(b.name,'he')).slice(0,10);
   if (!results.length) { dd.classList.remove('open'); return; }
   dd.innerHTML = results.map(p=>`<div class="part-option" onmousedown="addPart(${p.id})"><span>${p.name}</span><span class="part-price">${calcPrice(p)?'₪'+calcPrice(p).toLocaleString():'—'}</span></div>`).join('');
   dd.classList.add('open');
@@ -651,8 +660,8 @@ function updateTotal() {
 }
 
 // ── Catalog ──
-function renderCatalog(q='') {
-  const filtered = (q?parts.filter(p=>p.name.includes(q)):[...parts]).sort((a,b)=>a.name.localeCompare(b.name,'he'));
+window.renderCatalog = function(q='') {
+  const ql=q.toLowerCase(); const filtered = (q?parts.filter(p=>p.name.toLowerCase().includes(ql)||(p.notes||'').toLowerCase().includes(ql)):[...parts]).sort((a,b)=>a.name.localeCompare(b.name,'he'));
   document.getElementById('catalogBody').innerHTML = filtered.map(p => {
     const calcP=calcPrice(p), isCalc=p.cost&&p.multiplier;
     return `<tr>
@@ -734,6 +743,7 @@ window.deleteHistoryEntry = async function(partId, idx) {
 window.generateQuote = function() {
   const name=document.getElementById('f-name').value.trim();
   if (!name) { showToast('⚠️ יש להזין שם לקוח'); return; }
+  const baseTotal=currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0);
   quoteData={
     name, phone:document.getElementById('f-phone').value,
     license:document.getElementById('f-license').value,
@@ -742,25 +752,66 @@ window.generateQuote = function() {
     date:document.getElementById('f-date').value,
     notes:document.getElementById('f-notes').value,
     parts:currentOrderParts,
-    total:currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0),
+    total:baseTotal,
     quoteNum:'SQ-'+Date.now().toString().slice(-5)
   };
+  document.getElementById('quoteDiscount').value='';
+  document.getElementById('quoteManualExtra').value='';
+  updateQuotePreview();
   document.getElementById('quoteModal').classList.add('open');
+};
+
+window.updateQuotePreview = function() {
+  if (!quoteData) return;
+  const discountPct = parseFloat(document.getElementById('quoteDiscount').value)||0;
+  const manualExtra = parseFloat(document.getElementById('quoteManualExtra').value)||0;
+  const base = quoteData.total;
+  const discountAmt = Math.round(base*(discountPct/100));
+  const afterDiscount = base - discountAmt;
+  const afterExtra = afterDiscount + manualExtra;
+  const vat = Math.round(afterExtra*(vatRate/100));
+  const total = afterExtra + vat;
+  let html = '';
+  html += `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #dde4ed"><span>סכום חלקים (לפני הנחה)</span><span>₪${base.toLocaleString()}</span></div>`;
+  if (discountAmt>0) html += `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #dde4ed;color:#e74c3c"><span>הנחה ${discountPct}%</span><span>-₪${discountAmt.toLocaleString()}</span></div>`;
+  if (manualExtra>0) html += `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #dde4ed;color:#27ae60"><span>תוספת ידנית</span><span>+₪${manualExtra.toLocaleString()}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #dde4ed"><span>סכום לפני מע"מ</span><span>₪${afterExtra.toLocaleString()}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #dde4ed"><span>מע"מ ${vatRate}%</span><span>₪${vat.toLocaleString()}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:8px 0 2px;font-size:16px;font-weight:900;color:#1a3a5c"><span>סה"כ לתשלום</span><span style="color:#c8880e">₪${total.toLocaleString()}</span></div>`;
+  document.getElementById('quotePreview').innerHTML = html;
 };
 
 window.closeModal = function() { document.getElementById('quoteModal').classList.remove('open'); };
 
-window.printQuote = function() {
+window.printQuote = function(mode) {
   if (!quoteData) return;
-  const d=quoteData, vat=Math.round(d.total*(vatRate/100)), totalWithVat=d.total+vat;
+  const d=quoteData;
+  const discountPct = parseFloat(document.getElementById('quoteDiscount').value)||0;
+  const manualExtra = parseFloat(document.getElementById('quoteManualExtra').value)||0;
+  const discountAmt = Math.round(d.total*(discountPct/100));
+  const afterDiscount = d.total - discountAmt;
+  const afterExtra = afterDiscount + manualExtra;
+  const vat=Math.round(afterExtra*(vatRate/100));
+  const totalWithVat=afterExtra+vat;
   const dateStr=d.date?d.date.split('-').reverse().join('.'):new Date().toLocaleDateString('he-IL');
+  // notes: convert newlines to <br>
+  const notesHtml = d.notes ? d.notes.replace(/\n/g,'<br>') : '';
+
+  // All parts except labor
   const regularParts=d.parts.filter(p=>p.name!=='עבודה'&&p.name!=='עבודת כושר / שעת עבודה');
   const laborParts=d.parts.filter(p=>p.name==='עבודה'||p.name==='עבודת כושר / שעת עבודה');
-  const regularRows=regularParts.map((p,i)=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${i+1}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${p.name}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">${p.qty}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;font-weight:700">₪${(p.price*p.qty).toLocaleString()}</td></tr>`).join('');
   const laborTotal=laborParts.reduce((s,p)=>s+p.price*p.qty,0);
-  const laborRow=laborParts.length?`<tr style="background:#f4f7fb"><td colspan="3" style="padding:10px 12px;border-top:2px solid #1a3a5c;font-weight:700;font-size:14px;color:#1a3a5c">עבודה</td><td style="padding:10px 12px;border-top:2px solid #1a3a5c;text-align:center;font-weight:800;font-size:15px;color:#1a3a5c">₪${laborTotal.toLocaleString()}</td></tr>`:'';
 
-  const html=`<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>הצעת מחיר – ${d.name}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl;padding:20px 24px;font-size:13px}@page{margin:8mm;size:A4}@media print{body{padding:0}}</style></head><body>
+  let html;
+
+  if (mode === 'client') {
+    // CLIENT version: no prices in rows, no labor rows, only final total
+    const clientRows = regularParts.map((p,i)=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${i+1}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${p.name}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">${p.qty}</td></tr>`).join('');
+
+    const discountRow = discountAmt>0 ? `<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#e74c3c"><span>הנחה ${discountPct}%</span><span>-₪${discountAmt.toLocaleString()}</span></div>` : '';
+    const extraRow = ''; // manual extra hidden from client
+
+    html=`<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>הצעת מחיר – ${d.name}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl;padding:20px 24px;font-size:13px}@page{margin:8mm;size:A4}@media print{body{padding:0}}</style></head><body>
 <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #1a3a5c;padding-bottom:14px;margin-bottom:16px">
   <div><div style="font-size:26px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div><div style="font-size:12px;color:#888;margin-top:3px">יצור מרכבים למשאיות</div><div style="font-size:11px;color:#999;margin-top:6px">רח' הקידמה 16, א.ת. צפוני, אשדוד | 08-9400967 | office@silagi.co.il</div></div>
   <div style="text-align:left"><div style="background:#e8a020;color:#1a3a5c;padding:6px 16px;border-radius:6px;font-size:15px;font-weight:900;margin-bottom:8px">הצעת מחיר</div><div style="font-size:12px;color:#888">מספר: <b style="color:#1a3a5c">${d.quoteNum}</b></div><div style="font-size:12px;color:#888;margin-top:3px">תאריך: <b style="color:#1a3a5c">${dateStr}</b></div></div>
@@ -769,15 +820,17 @@ window.printQuote = function() {
   <div style="padding:10px 14px;border-left:1px solid #ddd;background:#f8fafc"><div style="font-size:10px;color:#888;margin-bottom:3px">לכבוד</div><div style="font-size:18px;font-weight:800;color:#1a3a5c">${d.name}</div>${d.phone?`<div style="font-size:13px;color:#555;margin-top:2px">📞 ${d.phone}</div>`:''}</div>
   <div style="padding:10px 14px;background:#f8fafc"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">${d.license?`<div><span style="color:#888;font-size:10px;display:block">רישוי</span><b>${d.license}</b></div>`:''} ${d.chassis?`<div><span style="color:#888;font-size:10px;display:block">שלדה</span><b>${d.chassis}</b></div>`:''} ${d.model?`<div><span style="color:#888;font-size:10px;display:block">דגם</span><b>${d.model}</b></div>`:''}</div></div>
 </div>
-${d.notes?`<div style="background:#fffbf0;border:1px solid #f0d080;border-radius:8px;padding:10px 14px;margin-bottom:16px"><div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:700">תיאור העבודה</div><div style="font-size:13px;line-height:1.5">${d.notes}</div></div>`:''}
+${notesHtml?`<div style="background:#fffbf0;border:1px solid #f0d080;border-radius:8px;padding:10px 14px;margin-bottom:16px"><div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:700">תיאור העבודה</div><div style="font-size:13px;line-height:1.7">${notesHtml}</div></div>`:''}
 <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
-  <thead><tr style="background:#1a3a5c;color:#fff"><th style="padding:10px 12px;text-align:right;font-size:12px;width:40px">#</th><th style="padding:10px 12px;text-align:right;font-size:12px">תיאור חלק / עבודה</th><th style="padding:10px 12px;text-align:center;font-size:12px;width:60px">כמות</th><th style="padding:10px 12px;text-align:center;font-size:12px;width:120px">מחיר ₪</th></tr></thead>
-  <tbody>${regularRows}${laborRow}</tbody>
+  <thead><tr style="background:#1a3a5c;color:#fff"><th style="padding:10px 12px;text-align:right;font-size:12px;width:40px">#</th><th style="padding:10px 12px;text-align:right;font-size:12px">פירוט חלקים</th><th style="padding:10px 12px;text-align:center;font-size:12px;width:60px">כמות</th></tr></thead>
+  <tbody>${clientRows}</tbody>
 </table>
-<div style="display:flex;justify-content:flex-end;margin-bottom:20px"><div style="width:280px">
-  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>סכום לפני מע"מ</span><span>₪${d.total.toLocaleString()}</span></div>
+<div style="display:flex;justify-content:flex-end;margin-bottom:20px"><div style="width:300px">
+  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>מחיר לפני הנחה ומע"מ</span><span>₪${d.total.toLocaleString()}</span></div>
+  ${discountRow}
+  ${discountAmt>0?`<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;font-weight:700;color:#1a3a5c"><span>מחיר סופי אחרי הנחה</span><span>₪${afterDiscount.toLocaleString()}</span></div>`:''}
   <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>מע"מ ${vatRate}%</span><span>₪${vat.toLocaleString()}</span></div>
-  <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px"><span>סה"כ לתשלום</span><span style="color:#e8a020">₪${totalWithVat.toLocaleString()}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px"><span>מחיר סופי</span><span style="color:#e8a020">₪${totalWithVat.toLocaleString()}</span></div>
 </div></div>
 <div style="margin-top:40px;border-top:2px solid #1a3a5c;padding-top:20px;display:flex;justify-content:space-between;align-items:flex-end">
   <div style="font-size:11px;color:#888">הצעה זו בתוקף ל-30 יום</div>
@@ -785,6 +838,38 @@ ${d.notes?`<div style="background:#fffbf0;border:1px solid #f0d080;border-radius
 </div>
 <scr` + `ipt>window.onload=function(){setTimeout(function(){window.print();},500);}<\/scr` + `ipt>
 </body></html>`;
+
+  } else {
+    // INTERNAL version: all prices visible, labor rows, full breakdown
+    const regularRows=regularParts.map((p,i)=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${i+1}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${p.name}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">${p.qty}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">₪${p.price.toLocaleString()}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;font-weight:700">₪${(p.price*p.qty).toLocaleString()}</td></tr>`).join('');
+    const laborRow=laborParts.length?`<tr style="background:#f4f7fb"><td colspan="4" style="padding:10px 12px;border-top:2px solid #1a3a5c;font-weight:700;font-size:14px;color:#1a3a5c">עבודה</td><td style="padding:10px 12px;border-top:2px solid #1a3a5c;text-align:center;font-weight:800;font-size:15px;color:#1a3a5c">₪${laborTotal.toLocaleString()}</td></tr>`:'';
+    const discountRow = discountAmt>0?`<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#e74c3c"><span>הנחה ${discountPct}%</span><span>-₪${discountAmt.toLocaleString()}</span></div>`:'';
+    const extraRow = manualExtra>0?`<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#27ae60"><span>תוספת ידנית</span><span>+₪${manualExtra.toLocaleString()}</span></div>`:'';
+
+    html=`<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>פירוט פנימי – ${d.name}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl;padding:20px 24px;font-size:13px}@page{margin:8mm;size:A4}@media print{body{padding:0}}</style></head><body>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #1a3a5c;padding-bottom:14px;margin-bottom:16px">
+  <div><div style="font-size:26px;font-weight:900;color:#1a3a5c">סילגי 2000 בע"מ</div><div style="font-size:12px;color:#888;margin-top:3px">יצור מרכבים למשאיות</div><div style="font-size:11px;color:#999;margin-top:6px">רח' הקידמה 16, א.ת. צפוני, אשדוד | 08-9400967 | office@silagi.co.il</div></div>
+  <div style="text-align:left"><div style="background:#1a3a5c;color:#fff;padding:6px 16px;border-radius:6px;font-size:15px;font-weight:900;margin-bottom:8px">📋 פירוט פנימי</div><div style="font-size:12px;color:#888">מספר: <b style="color:#1a3a5c">${d.quoteNum}</b></div><div style="font-size:12px;color:#888;margin-top:3px">תאריך: <b style="color:#1a3a5c">${dateStr}</b></div></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:16px;border:1px solid #ddd;border-radius:8px;overflow:hidden">
+  <div style="padding:10px 14px;border-left:1px solid #ddd;background:#f8fafc"><div style="font-size:10px;color:#888;margin-bottom:3px">לקוח</div><div style="font-size:18px;font-weight:800;color:#1a3a5c">${d.name}</div>${d.phone?`<div style="font-size:13px;color:#555;margin-top:2px">📞 ${d.phone}</div>`:''}</div>
+  <div style="padding:10px 14px;background:#f8fafc"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">${d.license?`<div><span style="color:#888;font-size:10px;display:block">רישוי</span><b>${d.license}</b></div>`:''} ${d.chassis?`<div><span style="color:#888;font-size:10px;display:block">שלדה</span><b>${d.chassis}</b></div>`:''} ${d.model?`<div><span style="color:#888;font-size:10px;display:block">דגם</span><b>${d.model}</b></div>`:''}</div></div>
+</div>
+${notesHtml?`<div style="background:#fffbf0;border:1px solid #f0d080;border-radius:8px;padding:10px 14px;margin-bottom:16px"><div style="font-size:11px;color:#888;margin-bottom:4px;font-weight:700">תיאור העבודה</div><div style="font-size:13px;line-height:1.7">${notesHtml}</div></div>`:''}
+<table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+  <thead><tr style="background:#1a3a5c;color:#fff"><th style="padding:10px 12px;text-align:right;font-size:12px;width:40px">#</th><th style="padding:10px 12px;text-align:right;font-size:12px">תיאור חלק</th><th style="padding:10px 12px;text-align:center;font-size:12px;width:60px">כמות</th><th style="padding:10px 12px;text-align:center;font-size:12px;width:100px">מחיר יח'</th><th style="padding:10px 12px;text-align:center;font-size:12px;width:100px">סה"כ ₪</th></tr></thead>
+  <tbody>${regularRows}${laborRow}</tbody>
+</table>
+<div style="display:flex;justify-content:flex-end;margin-bottom:20px"><div style="width:300px">
+  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>סכום לפני הנחה ומע"מ</span><span>₪${d.total.toLocaleString()}</span></div>
+  ${discountRow}${extraRow}
+  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>סכום לפני מע"מ</span><span>₪${afterExtra.toLocaleString()}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>מע"מ ${vatRate}%</span><span>₪${vat.toLocaleString()}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px"><span>סה"כ לתשלום</span><span style="color:#e8a020">₪${totalWithVat.toLocaleString()}</span></div>
+</div></div>
+<scr` + `ipt>window.onload=function(){setTimeout(function(){window.print();},500);}<\/scr` + `ipt>
+</body></html>`;
+  }
 
   window.closeModal();
   const w=window.open('','_blank');
