@@ -191,6 +191,20 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
       <div class="total-label">סה"כ לתשלום (לפני מע"מ)</div>
       <div class="total-amount"><span>₪</span><span id="totalAmount">0</span></div>
     </div>
+    <div id="priceAdjust" style="display:none;margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field">
+        <label>הנחה (%)</label>
+        <input id="f-discount" type="number" min="0" max="100" step="0.5" placeholder="0" oninput="updateFinalTotal()">
+      </div>
+      <div class="field">
+        <label>תוספת מחיר ידנית (₪)</label>
+        <input id="f-manual-extra" type="number" min="0" step="1" placeholder="0" oninput="updateFinalTotal()">
+      </div>
+    </div>
+    <div id="finalTotalBar" style="display:none;background:#234d7a;color:#fff;border-radius:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <div style="font-size:15px;font-weight:600;opacity:0.85">מחיר סופי ללקוח (לפני מע"מ)</div>
+      <div style="font-size:26px;font-weight:900;color:#e8a020">₪<span id="finalTotalAmount">0</span></div>
+    </div>
   </div>
   <div class="actions-bar">
     <button class="btn btn-primary" onclick="saveOrder()">💾 שמור הזמנה</button>
@@ -504,7 +518,11 @@ function renderOrders() {
   const list = document.getElementById('ordersList');
   const stats = document.getElementById('statsBar');
   const q = (document.getElementById('ordersSearch')?.value || '').trim().toLowerCase();
-  const totalRevenue = orders.reduce((s,o) => s+(o.total||0), 0);
+  const totalRevenue = orders.reduce((s,o) => {
+    const base = (o.total||0) + (o.manualExtra||0);
+    const disc = Math.round(base*((o.discount||0)/100));
+    return s + (base - disc);
+  }, 0);
   const openCount = orders.filter(o=>o.status==='open').length;
   const doneCount = orders.filter(o=>o.status==='done').length;
   stats.innerHTML = `
@@ -523,7 +541,7 @@ function renderOrders() {
         <div class="order-details">${[o.license,o.model].filter(Boolean).join(' · ')}</div>
       </div>
       <div class="order-meta">
-        <div class="order-total">₪${(o.total||0).toLocaleString()}</div>
+        <div class="order-total">₪${(()=>{ const base=(o.total||0)+(o.manualExtra||0); const disc=Math.round(base*((o.discount||0)/100)); return (base-disc).toLocaleString(); })()}</div>
         <span class="status-badge ${o.status==='open'?'status-open':'status-done'}">${o.status==='open'?'פתוחה':'הושלמה'}</span>
       </div>
     </div>`).join('');
@@ -541,7 +559,12 @@ window.editOrder = function(id) {
   document.getElementById('f-model').value = order.model||'';
   document.getElementById('f-date').value = order.date||'';
   document.getElementById('f-notes').value = order.notes||'';
+  document.getElementById('f-discount').value = order.discount||'';
+  document.getElementById('f-manual-extra').value = order.manualExtra||'';
   document.getElementById('formTitle').textContent = `✏️ עריכת הזמנה #${id.slice(-4)}`;
+  // restore quote settings if previously saved
+  document.getElementById('quoteDiscount').value = order.discount||'';
+  document.getElementById('quoteManualExtra').value = order.manualExtra||'';
   document.getElementById('deleteBtn').style.display = 'inline-flex';
   document.getElementById('completeBtn').style.display = 'inline-flex';
   updateCompleteBtn(order.status);
@@ -554,6 +577,10 @@ function resetForm() {
   currentOrderId = null; currentOrderParts = [];
   ['f-name','f-phone','f-license','f-chassis','f-model','f-notes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('f-discount').value = '';
+  document.getElementById('f-manual-extra').value = '';
+  document.getElementById('quoteDiscount').value = '';
+  document.getElementById('quoteManualExtra').value = '';
   document.getElementById('formTitle').textContent = '➕ הזמנת תיקון חדשה';
   document.getElementById('deleteBtn').style.display = 'none';
   document.getElementById('completeBtn').style.display = 'none';
@@ -563,6 +590,13 @@ function resetForm() {
 window.saveOrder = async function() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) { showToast('⚠️ יש להזין שם לקוח'); return; }
+  const baseTotal = currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0);
+  const discount = parseFloat(document.getElementById('f-discount').value)||0;
+  const manualExtra = parseFloat(document.getElementById('f-manual-extra').value)||0;
+  const clientBase = baseTotal + manualExtra;
+  const discAmt = Math.round(clientBase*(discount/100));
+  const afterDiscount = clientBase - discAmt;
+  const finalTotal = afterDiscount + Math.round(afterDiscount*(vatRate/100));
   const order = {
     id: currentOrderId || 'ord_' + Date.now(),
     name, phone: document.getElementById('f-phone').value,
@@ -572,7 +606,8 @@ window.saveOrder = async function() {
     date: document.getElementById('f-date').value,
     notes: document.getElementById('f-notes').value,
     parts: currentOrderParts,
-    total: currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0),
+    total: baseTotal,
+    discount, manualExtra, finalTotal,
     status: 'open',
     createdAt: new Date().toISOString()
   };
@@ -649,15 +684,28 @@ window.updateQty = function(idx,val) { currentOrderParts[idx].qty=Math.max(1,par
 
 function renderPartsList() {
   const tbody=document.getElementById('partsList'), table=document.getElementById('partsTable'), empty=document.getElementById('partsEmpty'), bar=document.getElementById('totalBar');
-  if (!currentOrderParts.length) { table.style.display='none'; empty.style.display='block'; bar.style.display='none'; return; }
-  table.style.display='table'; empty.style.display='none'; bar.style.display='flex';
+  const adjust=document.getElementById('priceAdjust'), finalBar=document.getElementById('finalTotalBar');
+  if (!currentOrderParts.length) { table.style.display='none'; empty.style.display='block'; bar.style.display='none'; adjust.style.display='none'; finalBar.style.display='none'; return; }
+  table.style.display='table'; empty.style.display='none'; bar.style.display='flex'; adjust.style.display='grid'; finalBar.style.display='flex';
   tbody.innerHTML = currentOrderParts.map((p,i)=>`<tr><td>${p.name}</td><td class="price-tag">₪${p.price.toLocaleString()}</td><td><input class="qty-input" type="number" min="1" value="${p.qty}" onchange="updateQty(${i},this.value)"></td><td class="price-tag">₪${(p.price*p.qty).toLocaleString()}</td><td><button class="btn-remove" onclick="removePart(${i})">×</button></td></tr>`).join('');
   updateTotal();
 }
 
 function updateTotal() {
-  document.getElementById('totalAmount').textContent = currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0).toLocaleString();
+  const base = currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0);
+  document.getElementById('totalAmount').textContent = base.toLocaleString();
+  updateFinalTotal();
 }
+
+window.updateFinalTotal = function() {
+  const base = currentOrderParts.reduce((s,p)=>s+p.price*p.qty,0);
+  const discountPct = parseFloat(document.getElementById('f-discount').value)||0;
+  const manualExtra = parseFloat(document.getElementById('f-manual-extra').value)||0;
+  const clientBase = base + manualExtra;
+  const discountAmt = Math.round(clientBase*(discountPct/100));
+  const afterDiscount = clientBase - discountAmt;
+  document.getElementById('finalTotalAmount').textContent = afterDiscount.toLocaleString();
+};
 
 // ── Catalog ──
 window.renderCatalog = function(q='') {
@@ -755,8 +803,8 @@ window.generateQuote = function() {
     total:baseTotal,
     quoteNum:'SQ-'+Date.now().toString().slice(-5)
   };
-  document.getElementById('quoteDiscount').value='';
-  document.getElementById('quoteManualExtra').value='';
+  document.getElementById('quoteDiscount').value = document.getElementById('f-discount').value||'';
+  document.getElementById('quoteManualExtra').value = document.getElementById('f-manual-extra').value||'';
   updateQuotePreview();
   document.getElementById('quoteModal').classList.add('open');
 };
@@ -788,6 +836,22 @@ window.printQuote = function(mode) {
   const d=quoteData;
   const discountPct = parseFloat(document.getElementById('quoteDiscount').value)||0;
   const manualExtra = parseFloat(document.getElementById('quoteManualExtra').value)||0;
+
+  // Save discount and extra back to the order in Firestore
+  if (currentOrderId) {
+    const order = orders.find(o=>o.id===currentOrderId);
+    if (order) {
+      const base = d.total + manualExtra;
+      const discAmt = Math.round(base*(discountPct/100));
+      const afterDiscount = base - discAmt;
+      const vat = Math.round(afterDiscount*(vatRate/100));
+      const finalTotal = afterDiscount + vat;
+      order.discount = discountPct;
+      order.manualExtra = manualExtra;
+      order.finalTotal = finalTotal;
+      fbSaveOrder(order);
+    }
+  }
   const discountAmt = Math.round(d.total*(discountPct/100));
   const afterDiscount = d.total - discountAmt;
   const afterExtra = afterDiscount + manualExtra;
