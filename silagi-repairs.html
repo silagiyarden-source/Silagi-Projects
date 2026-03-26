@@ -808,8 +808,15 @@ window.printQuote = function(mode) {
     // CLIENT version: no prices in rows, no labor rows, only final total
     const clientRows = regularParts.map((p,i)=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${i+1}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right">${p.name}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center">${p.qty}</td></tr>`).join('');
 
-    const discountRow = discountAmt>0 ? `<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#e74c3c"><span>הנחה ${discountPct}%</span><span>-₪${discountAmt.toLocaleString()}</span></div>` : '';
-    const extraRow = ''; // manual extra hidden from client
+    // CLIENT: extra is baked into base, discount applied on base+extra
+    const clientBase = d.total + manualExtra;
+    const clientDiscountAmt = Math.round(clientBase*(discountPct/100));
+    const clientAfterDiscount = clientBase - clientDiscountAmt;
+    const clientVat = Math.round(clientAfterDiscount*(vatRate/100));
+    const clientTotal = clientAfterDiscount + clientVat;
+
+    const discountRow = clientDiscountAmt>0 ? `<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;color:#e74c3c"><span>הנחה ${discountPct}%</span><span>-₪${clientDiscountAmt.toLocaleString()}</span></div>` : '';
+    const extraRow = ''; // manual extra hidden from client - already baked into base
 
     html=`<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>הצעת מחיר – ${d.name}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;color:#1e2d3d;background:#fff;direction:rtl;padding:20px 24px;font-size:13px}@page{margin:8mm;size:A4}@media print{body{padding:0}}</style></head><body>
 <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:4px solid #1a3a5c;padding-bottom:14px;margin-bottom:16px">
@@ -826,13 +833,14 @@ ${notesHtml?`<div style="background:#fffbf0;border:1px solid #f0d080;border-radi
   <tbody>${clientRows}</tbody>
 </table>
 <div style="display:flex;justify-content:flex-end;margin-bottom:20px"><div style="width:300px">
-  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>מחיר לפני הנחה ומע"מ</span><span>₪${d.total.toLocaleString()}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>מחיר לפני הנחה ומע"מ</span><span>₪${clientBase.toLocaleString()}</span></div>
   ${discountRow}
-  ${discountAmt>0?`<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;font-weight:700;color:#1a3a5c"><span>מחיר סופי אחרי הנחה</span><span>₪${afterDiscount.toLocaleString()}</span></div>`:''}
-  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>מע"מ ${vatRate}%</span><span>₪${vat.toLocaleString()}</span></div>
-  <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px"><span>מחיר סופי</span><span style="color:#e8a020">₪${totalWithVat.toLocaleString()}</span></div>
+  ${clientDiscountAmt>0?`<div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px;font-weight:700;color:#1a3a5c"><span>מחיר אחרי הנחה</span><span>₪${clientAfterDiscount.toLocaleString()}</span></div>`:''}
+  ${extraRow}
+  <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #eee;font-size:13px"><span>מע"מ ${vatRate}%</span><span>₪${clientVat.toLocaleString()}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#1a3a5c;color:#fff;border-radius:0 0 10px 10px;font-weight:900;font-size:22px;margin-top:2px"><span>מחיר סופי</span><span style="color:#e8a020">₪${clientTotal.toLocaleString()}</span></div>
 </div></div>
-<div style="margin-top:40px;border-top:2px solid #1a3a5c;padding-top:20px;display:flex;justify-content:space-between;align-items:flex-end">
+<div style="position:fixed;bottom:8mm;left:8mm;right:8mm;border-top:2px solid #1a3a5c;padding-top:16px;display:flex;justify-content:space-between;align-items:flex-end;background:#fff">
   <div style="font-size:11px;color:#888">הצעה זו בתוקף ל-30 יום</div>
   <div style="text-align:center"><div style="font-size:15px;font-weight:700;color:#1a3a5c;margin-bottom:30px">חתימה ואישור לקוח</div><div style="border-bottom:2px solid #1a3a5c;width:220px;margin:0 auto"></div><div style="font-size:12px;color:#888;margin-top:6px">שם ותאריך</div></div>
 </div>
