@@ -210,8 +210,8 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
       <span id="syncText">מתחבר...</span>
     </div>
     <div class="header-nav">
-      <button class="nav-btn" onclick="showView('dashboard')">📊 דשבורד</button>
-      <button class="nav-btn active" onclick="showView('orders')">📋 הזמנות</button>
+      <button class="nav-btn active" onclick="showView('dashboard')">📊 דשבורד</button>
+      <button class="nav-btn" onclick="showView('orders')">📋 הזמנות</button>
       <button class="nav-btn" onclick="newOrder()">➕ חדשה</button>
       <button class="nav-btn" onclick="showView('catalog')">🔩 מחירון</button>
       <button class="nav-btn" onclick="openVatModal()">⚙️ הגדרות</button>
@@ -220,7 +220,7 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 </div>
 
 <!-- DASHBOARD -->
-<div class="view" id="view-dashboard">
+<div class="view active" id="view-dashboard">
   <div class="page-title">📊 דשבורד ניהול</div>
 
   <!-- KPI Row -->
@@ -257,7 +257,7 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 </div>
 
 <!-- ORDERS LIST -->
-<div class="view active" id="view-orders">
+<div class="view" id="view-orders">
   <div class="page-title">📋 הזמנות תיקון</div>
   <div class="stats-bar" id="statsBar"></div>
   <div style="margin-bottom:14px">
