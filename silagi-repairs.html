@@ -578,7 +578,7 @@ async function loadAllData() {
     document.getElementById('loadingOverlay').classList.add('hidden');
     setSynced();
     document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
-    renderOrders();
+    showView('dashboard');
   } catch(e) {
     console.error(e);
     document.getElementById('loadingOverlay').classList.add('hidden');
